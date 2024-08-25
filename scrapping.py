@@ -9,7 +9,7 @@ from fuzzywuzzy import fuzz
 
 start_date = '2024-08-01'
 end_date = '2024-08-30'
-chromium_path = os.getenv("CHROMIUM_PATH")
+chromium_path = '/root/.cache/ms-playwright/chromium-1129'
 executable_file = 'chrome'
 executable_path = os.path.join(chromium_path, executable_file)
 headless_option = False
