@@ -1,6 +1,5 @@
 from playwright.sync_api import sync_playwright
 import os
-import json
 import re
 import calendar
 from datetime import datetime, timedelta
@@ -10,7 +9,7 @@ from fuzzywuzzy import fuzz
 
 start_date = '2024-07-01'
 end_date = '2024-07-31'
-chromium_path = os.getenv("CHROMIUM_PATH")
+chromium_path = '/home/opt/chrommium'
 executable_file = 'chrome.exe'
 executable_path = os.path.join(chromium_path, executable_file)
 headless_option = False
