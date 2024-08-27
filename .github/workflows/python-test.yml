@@ -30,7 +30,7 @@ jobs:
                 playwright install
 
             - name: Set up environment variables
-              run: echo "CHROMIUM_PATH=/home/runner/.cache/ms-playwright/chromium-1129" >> $GITHUB_ENV
+              run: echo "CHROMIUM_PATH=/home/runner/.cache/ms-playwright/chromium-1129/chrome-win" >> $GITHUB_ENV
 
             - name: Install Additional GI Libraries
               run: |
