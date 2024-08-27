@@ -35,9 +35,9 @@ jobs:
             - name: Install Additional GI Libraries
               run: |
                 sudo apt-get update
-                sudo apt-get install -y libwoff2dec1 libvpx7 libevent-2.1-7 libopus0 \
+                sudo apt-get install -y libvpx7 libevent-2.1-7 libopus0 \
                 libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libharfbuzz0b \
-                libhyphen0 libmanette-0.2-0 libflite1 libgles2-mesa libx264-160
+                libhyphen0 libmanette-0.2-0 libflite1 libgles2-mesa
 
             - name: Current directory
               run: pwd
