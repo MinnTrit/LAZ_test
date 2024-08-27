@@ -30,7 +30,7 @@ jobs:
                 playwright install
               #Set up the environmental variable
               env:
-                CHROMIUM_PATH: /home/runner/.cache/ms-playwright/chromium-1129
+                CHROMMIUM_PATH: "/home/runner/.cache/ms-playwright/chromium-1129"
 
             - name: Install Additional GI Libraries
               run: |
