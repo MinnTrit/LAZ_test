@@ -13,7 +13,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
     def setUp(self):
         self.chromium_path = os.getenv("CHROMIUM_PATH")
-        self.executable_path = os.path.join(self.chromium_path, "chrome.exe")
+        self.executable_path = os.path.join(self.chromium_path, "chrome")
         self.playwright = sync_playwright().start()
         self.browser = self.playwright.chromium.launch(executable_path=self.executable_path, headless=True)
         self.page = self.browser.new_page()

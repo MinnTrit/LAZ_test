@@ -21,13 +21,23 @@ jobs:
               with:
                 python-version: '3.8'
 
-            - name: Install dependencies
+            - name: Install Python's Libraries
               run: |
                 python -m pip install --upgrade pip
                 pip install fuzzywuzzy
                 pip install pandas
                 pip install playwright
                 playwright install
+              #Set up the environmental variable
+              env:
+                CHROMIUM_PATH: /home/runner/.cache/ms-playwright/chromium-1129
+
+            - name: Install Additional GI Libraries
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y libwoff2dec1 libvpx7 libevent-2.1-7 libopus0 \
+                libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libharfbuzz0b \
+                libhyphen0 libmanette-0.2-0 libflite1 libgles2-mesa libx264-160
 
             - name: Current directory
               run: pwd
