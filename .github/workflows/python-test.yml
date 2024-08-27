@@ -28,9 +28,9 @@ jobs:
                 pip install pandas
                 pip install playwright
                 playwright install
-              #Set up the environmental variable
-              env:
-                CHROMIUM_PATH: "/home/runner/.cache/ms-playwright/chromium-1129"
+
+            - name: Set up environment variables
+              run: echo "CHROMIUM_PATH=/home/runner/.cache/ms-playwright/chromium-1129" >> $GITHUB_ENV
 
             - name: Install Additional GI Libraries
               run: |
