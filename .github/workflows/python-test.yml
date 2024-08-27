@@ -29,5 +29,8 @@ jobs:
                 pip install playwright
                 playwright install
 
+            - name: Current directory
+              run: pwd
+
             - name: Run tests
               run: python test_scrapping.py
