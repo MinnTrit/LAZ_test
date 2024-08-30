@@ -7,16 +7,16 @@ import pandas as pd
 import time
 from fuzzywuzzy import fuzz
 
-start_date = '2024-07-01'
-end_date = '2024-07-31'
+start_date = '2024-08-01'
+end_date = '2024-08-31'
 chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
 executable_file = 'chrome'
 executable_path = os.path.join(chromium_path, executable_file)
 headless_option = True 
 sort_option = 'recent'
 
-product_name='Lactum for 6-12 Months Old 2kg Infant Formula Milk Supplement Powder'
-product_url='https://www.lazada.com.ph/products/lactum-for-6-12-months-old-2kg-infant-formula-milk-supplement-powder-i3103362895.html'
+product_name='Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
+product_url='portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
 
 def to_navigate(page):
     retries = 2
