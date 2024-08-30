@@ -96,8 +96,8 @@ def click_product(page, product_url):
         if over18_button:
             over18_button.click()
             print('Clicked the "Over 18" button')
-    except Exception as e:
-        print(f'No over 18 button found')
+    except Exception:
+        print('No over 18 button found')
     similarity_raito = 80
     while current_retry < retries:
         try:
@@ -120,20 +120,29 @@ def click_product(page, product_url):
             current_retry += 1
 
 def get_total_ratings(page):
-    matching_pattern = r'(\d+\.?\d*)'
-    page.wait_for_load_state('load')
-    rating_div = page.query_selector('div.pdp-review-summary a')
-    if rating_div:
-        rating_text = rating_div.text_content()
-        re_found = re.search(matching_pattern, rating_text)
-        if re_found:
-            return re_found.group(1)
-        else:
-            return 0
-    else:
-        return 0
+    retries = 2
+    current_retry = 0
+    while current_retry < retries:
+        try:
+            matching_pattern = r'(\d+\.?\d*)'
+            page.wait_for_load_state('load')
+            rating_div = page.query_selector('div.pdp-review-summary a')
+            if rating_div:
+                rating_text = rating_div.text_content()
+                re_found = re.search(matching_pattern, rating_text)
+                if re_found:
+                    return re_found.group(1)
+                else:
+                    return 0
+            else:
+                return 0
+        except Exception:
+            print(f'Error occured while getting the total ratings')
+            current_retry += 1
+    return 0
 
 def get_selling_price(page):
+    error_string = "Not found"
     matching_pattern = r'(\d+[^a-zA-Z0-9]\d+)'
     page.wait_for_selector('div.pdp-product-price')
     price_text = page.query_selector('div.pdp-product-price span')
@@ -142,9 +151,9 @@ def get_selling_price(page):
         if price_value:
             return price_value.group(1)
         else:
-            return "Not found"
+            return error_string
     else:
-        return "Not found"
+        return error_string
     
 def convert_to_datetime(date_string):
   try:
@@ -288,8 +297,8 @@ def get_ratings(page):
                     check_sliding(page)
                 else: 
                     return rating_count
-            except Exception as e:
-                print(f'Captcha found, failed to capture the rating')
+            except Exception:
+                print('Captcha found, failed to capture the rating')
                 return 0
     return rating_count
 
