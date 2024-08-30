@@ -6,11 +6,13 @@ from datetime import datetime, timedelta
 import pandas as pd
 import time
 from fuzzywuzzy import fuzz
+import json
 
-start_date = '2024-08-01'
+start_date = '2024-08-24'
 end_date = '2024-08-31'
-chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
-executable_file = 'chrome'
+# chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
+chromium_path = os.getenv("CHROMIUM_PATH")
+executable_file = 'chrome.exe'
 executable_path = os.path.join(chromium_path, executable_file)
 headless_option = False
 sort_option = 'recent'
@@ -119,7 +121,7 @@ def click_product(page, product_url):
 
 def get_total_ratings(page):
     matching_pattern = r'(\d+\.?\d*)'
-    page.wait_for_selector('div.pdp-review-summary')
+    page.wait_for_load_state('load')
     rating_div = page.query_selector('div.pdp-review-summary a')
     if rating_div:
         rating_text = rating_div.text_content()
