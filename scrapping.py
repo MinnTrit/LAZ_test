@@ -7,19 +7,19 @@ import pandas as pd
 import time
 from fuzzywuzzy import fuzz
 
-start_date = '2024-08-01'
-end_date = '2024-08-30'
+start_date = '2024-07-01'
+end_date = '2024-07-31'
 chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
-executable_file = 'chrome.exe'
+executable_file = 'chrome'
 executable_path = os.path.join(chromium_path, executable_file)
-headless_option = False
+headless_option = True 
 sort_option = 'recent'
 
 product_name='Lactum for 6-12 Months Old 2kg Infant Formula Milk Supplement Powder'
 product_url='https://www.lazada.com.ph/products/lactum-for-6-12-months-old-2kg-infant-formula-milk-supplement-powder-i3103362895.html'
 
 def to_navigate(page):
-    retries = 3
+    retries = 2
     current_retry = 0
     initial_access=True
     while current_retry < retries:
@@ -70,7 +70,7 @@ def get_month_map():
     return month_map
 
 def search_product(page, input_product):
-    retries = 3
+    retries = 2
     current_retry = 0
     while current_retry < retries:
         try:
@@ -86,7 +86,7 @@ def search_product(page, input_product):
             current_retry += 1
 
 def click_product(page, product_url):
-    retries = 3
+    retries = 2
     current_retry = 0
     try:
         page.wait_for_selector('div.ant-modal-content')
@@ -172,7 +172,7 @@ def to_sort(page, sort_option):
     total_height = page.evaluate('() => document.body.scrollHeight')
     middle_point = (page_height + total_height) / 3
     page.evaluate(f'window.scrollTo(0, {middle_point})')
-    retries = 3
+    retries = 2
     current_retry = 0
     while current_retry < retries:
         try:
