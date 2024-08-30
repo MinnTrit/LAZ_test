@@ -36,8 +36,8 @@ def to_navigate(page):
                 page.wait_for_load_state('load')
                 print('The page has fully loaded')
                 current_retry += 3
-        except Exception as e:
-            print(f'Error occurred while navigating the page: {e}')
+        except Exception:
+            print('Error occurred while navigating the page')
             current_retry += 1
 
 def date_generator(start_date, end_date):
@@ -83,8 +83,8 @@ def search_product(page, input_product):
             page.keyboard.press("Enter")
             print(f'Product {input_product} has been searched')
             current_retry += 3
-        except Exception as e:
-            print(f'Error occured while searching the products {e}')
+        except Exception:
+            print('Error occured while searching the products')
             current_retry += 1
 
 def click_product(page, product_url):
@@ -115,8 +115,8 @@ def click_product(page, product_url):
             next_button = page.query_selector_all('button.ant-pagination-item-link')[1]
             if next_button:
                 next_button.click()
-        except Exception as e:
-            print(f'Error occured while click the product as {e}')
+        except Exception:
+            print('Error occured while click the product')
             current_retry += 1
 
 def get_total_ratings(page):
@@ -137,7 +137,7 @@ def get_total_ratings(page):
             else:
                 return 0
         except Exception:
-            print(f'Error occured while getting the total ratings')
+            print('Error occured while getting the total ratings')
             current_retry += 1
     return 0
 
@@ -200,8 +200,8 @@ def to_sort(page, sort_option):
                         li.click()
                         time.sleep(1)
                         return "Found"
-        except Exception as e:
-            print(f'Error occured while sorting the page {e}')
+        except Exception:
+            print('Error occured while sorting the page')
             current_retry += 1
     return "Not found"
 
