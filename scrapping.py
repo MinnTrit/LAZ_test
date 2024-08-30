@@ -16,7 +16,7 @@ headless_option = True
 sort_option = 'recent'
 
 product_name='Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
-product_url='portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
+product_url='https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
 
 def to_navigate(page):
     retries = 2

@@ -25,8 +25,8 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.playwright.stop()
 
     def test_search_product(self):
-        input_product = 'Lactum for 6-12 Months Old 2kg Infant Formula Milk Supplement Powder'
-        product_url = 'www.lazada.com.ph/products/lactum-for-6-12-months-old-2kg-infant-formula-milk-supplement-powder-i3103362895.html'
+        input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
+        product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
         to_navigate(self.page)
         search_product(self.page, input_product)
         click_product(self.page, product_url)
