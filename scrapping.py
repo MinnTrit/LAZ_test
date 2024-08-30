@@ -7,34 +7,36 @@ import pandas as pd
 import time
 from fuzzywuzzy import fuzz
 
-start_date = '2024-07-01'
-end_date = '2024-07-31'
+start_date = '2024-08-01'
+end_date = '2024-08-30'
 chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
 executable_file = 'chrome'
 executable_path = os.path.join(chromium_path, executable_file)
-headless_option = True
+headless_option = False
 sort_option = 'recent'
 
 product_name='Lactum for 6-12 Months Old 2kg Infant Formula Milk Supplement Powder'
 product_url='https://www.lazada.com.ph/products/lactum-for-6-12-months-old-2kg-infant-formula-milk-supplement-powder-i3103362895.html'
 
 def to_navigate(page):
+    retries = 3
+    current_retry = 0
     initial_access=True
-    while True:
+    while current_retry < retries:
         try:
             if initial_access is True:
                 initial_access=False
                 page.goto('https://www.lazada.com.ph', wait_until='load') 
                 page.wait_for_load_state('load') 
                 print('The page has fully loaded')
-                break
+                current_retry += 3
             else: 
                 page.wait_for_load_state('load')
                 print('The page has fully loaded')
-                break
+                current_retry += 3
         except Exception as e:
             print(f'Error occurred while navigating the page: {e}')
-            continue
+            current_retry += 1
 
 def date_generator(start_date, end_date):
     start_date = datetime.strptime(start_date, '%Y-%m-%d')
@@ -68,7 +70,9 @@ def get_month_map():
     return month_map
 
 def search_product(page, input_product):
-    while True:
+    retries = 3
+    current_retry = 0
+    while current_retry < retries:
         try:
             page.wait_for_selector('div.search-box__bar--29h6')
             search_bar = page.query_selector('div.search-box__bar--29h6 input')
@@ -76,12 +80,14 @@ def search_product(page, input_product):
                 search_bar.fill(input_product)
             page.keyboard.press("Enter")
             print(f'Product {input_product} has been searched')
-            break
+            current_retry += 3
         except Exception as e:
             print(f'Error occured while searching the products {e}')
-            continue
+            current_retry += 1
 
 def click_product(page, product_url):
+    retries = 3
+    current_retry = 0
     try:
         page.wait_for_selector('div.ant-modal-content')
         over18_button = page.query_selector('div.ant-modal-content button.ant-btn.css-1bkhbmc.app.ant-btn-primary.uVxk9')
@@ -91,7 +97,7 @@ def click_product(page, product_url):
     except Exception as e:
         print(f'No over 18 button found')
     similarity_raito = 80
-    while True:
+    while current_retry < retries:
         try:
             page.wait_for_selector('button.ant-pagination-item-link')
             trim_pattern = r'//(.*)'
@@ -109,7 +115,7 @@ def click_product(page, product_url):
                 next_button.click()
         except Exception as e:
             print(f'Error occured while click the product as {e}')
-            continue
+            current_retry += 1
 
 def get_total_ratings(page):
     matching_pattern = r'(\d+\.?\d*)'
@@ -166,7 +172,7 @@ def to_sort(page, sort_option):
     total_height = page.evaluate('() => document.body.scrollHeight')
     middle_point = (page_height + total_height) / 3
     page.evaluate(f'window.scrollTo(0, {middle_point})')
-    retries = 2
+    retries = 3
     current_retry = 0
     while current_retry < retries:
         try:
