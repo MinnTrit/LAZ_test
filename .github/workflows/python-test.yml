@@ -61,6 +61,9 @@ jobs:
             with:
               java-version: '17'
               distribution: 'temurin'
+
+          - name: Set Java Home
+            run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
           
           - name: Set up Sonarqube environment
             uses: actions/checkout@v4
