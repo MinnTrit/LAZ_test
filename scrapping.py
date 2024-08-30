@@ -12,7 +12,7 @@ end_date = '2024-08-31'
 chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
 executable_file = 'chrome'
 executable_path = os.path.join(chromium_path, executable_file)
-headless_option = True 
+headless_option = False
 sort_option = 'recent'
 
 product_name='Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
