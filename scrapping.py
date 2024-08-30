@@ -10,7 +10,7 @@ import json
 
 start_date = '2024-08-24'
 end_date = '2024-08-31'
-# chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
+chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
 chromium_path = os.getenv("CHROMIUM_PATH")
 executable_file = 'chrome.exe'
 executable_path = os.path.join(chromium_path, executable_file)
@@ -282,11 +282,15 @@ def get_ratings(page):
                     if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
                         rating_count += 1
             to_continue = check_continue(page, temp_list)
-            if to_continue is True:
-                next_page(page)
-                check_sliding(page)
-            else: 
-                return rating_count
+            try: 
+                if to_continue is True:
+                    next_page(page)
+                    check_sliding(page)
+                else: 
+                    return rating_count
+            except Exception as e:
+                print(f'Captcha found, failed to capture the rating')
+                return 0
     return rating_count
 
 def get_sku_informations(page, sort_option):
