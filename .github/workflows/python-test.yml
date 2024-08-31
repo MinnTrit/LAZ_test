@@ -28,6 +28,9 @@ jobs:
                 pip install fuzzywuzzy
                 pip install pandas
                 pip install playwright
+                pip install sonar-scanner
+                pip install pytest
+                pip install pytest-cov
                 playwright install
 
             - name: Set up environment variables
@@ -55,16 +58,7 @@ jobs:
         name: Build and analyze
         runs-on: ubuntu-latest
 
-        steps:
-          - name: Set up JDK 17
-            uses: actions/setup-java@v2
-            with:
-              java-version: '17'
-              distribution: 'temurin'
-
-          - name: Set Java Home
-            run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
-          
+        steps:          
           - name: Set up Sonarqube environment
             uses: actions/checkout@v4
             with: 
@@ -79,4 +73,15 @@ jobs:
             env:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
+
+          - name: Generage the test suite coverage
+            env: 
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+            run: |
+              -Dsonar.projectKey=Sonarqube-Github
+              -Dsonar.projectName=Sonarqube-Github
+              -Dsonar.host.url= ${{ secrets.SONAR_HOST_URL }}
+              -Dsonar.python.coverage.reportPath=coverage.xml
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 

@@ -146,18 +146,25 @@ def get_total_ratings(page):
     return 0
 
 def get_selling_price(page):
-    error_string = "Not found"
-    matching_pattern = r'(\d+[^a-zA-Z0-9]\d+)'
-    page.wait_for_selector('div.pdp-product-price')
-    price_text = page.query_selector('div.pdp-product-price span')
-    if price_text:
-        price_value = re.search(matching_pattern, price_text.text_content())
-        if price_value:
-            return price_value.group(1)
-        else:
-            return error_string
-    else:
-        return error_string
+    retries = 2
+    current_retry = 0
+    while current_retry < retries:
+        try:
+            matching_pattern = r'(\d+[^a-zA-Z0-9]\d+)'
+            page.wait_for_selector('div.pdp-product-price')
+            price_text = page.query_selector('div.pdp-product-price span')
+            if price_text:
+                price_value = re.search(matching_pattern, price_text.text_content())
+                if price_value:
+                    return price_value.group(1)
+                else:
+                    return 0
+            else:
+                return 0
+        except Exception:
+            print('Error while getting the selling price')
+            current_retry += 1
+    return 0
     
 def convert_to_datetime(date_string):
   try:
