@@ -30,7 +30,6 @@ jobs:
                 pip install playwright
                 pip install pytest
                 pip install pytest-cov
-                pip install coverage
                 playwright install
 
             - name: Set up environment variables
@@ -49,11 +48,6 @@ jobs:
             - name: Run tests
               run: |
                 pytest test_scrapping.py
-            
-            - name: Generate Coverage Report
-              run: |
-                coverage run test_scrapping.py
-                coverage xml -d ${{ github.workspace }}
 
             - name: Save result artifacts
               uses: actions/upload-artifact@v3
@@ -64,8 +58,14 @@ jobs:
     build:
         name: Build and analyze
         runs-on: ubuntu-latest
+        needs: test
 
         steps:          
+          - name: Generate Coverage Report
+            run: |
+              coverage run test_scrapping.py
+              coverage xml -d ${{ github.workspace }}
+
           - name: Set up and run SonarQube Scanner
             env:
               GITHUB_TOKEN: ${{ github.token }}
