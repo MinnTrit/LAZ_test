@@ -84,7 +84,6 @@ jobs:
             run: |
               echo "${{ github.workspace }}/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin" >> $GITHUB_PATH
               source ~/.bashrc
-              chmod +x /home/runner/work/LAZ_test/LAZ_test/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner
 
           - name: Run Sonarqube Scanner
             env:
