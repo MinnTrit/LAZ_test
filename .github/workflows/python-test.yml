@@ -67,7 +67,9 @@ jobs:
 
           - name: Generate Coverage Report
             run: |
-              coverage run ${{ github.workspace }}/.github/workflows/test_scrapping.py
+              echo "File in the root directory"
+              ls -l ${{ github.workspace }}
+              coverage run ${{ github.workspace }}/test_scrapping.py
               coverage xml -o ${{ github.workspace }}/coverage.xml
 
           - name: Set up and run SonarQube Scanner
