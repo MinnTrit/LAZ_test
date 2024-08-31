@@ -89,6 +89,10 @@ jobs:
               #Extracted the file to the expected directory
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip -d $extractionDirectory
               binPath="$extractionDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin"
+              
+              #Echo out the current bin path
+              echo "The current bin path is at"
+              echo $binPath
 
               #Setting up the environment variables
               echo $binPath >> $GITHUB_PATH
