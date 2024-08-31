@@ -8,7 +8,7 @@ on:
 
 jobs:
     test:
-        name: Test python code
+        name: Test Python Code
         #The environment to execute the job
         runs-on: ubuntu-latest
         
@@ -47,11 +47,10 @@ jobs:
 
             - name: Run tests
               run: |
-                pytest test_scrapping.py
+                coverage run test_scrapping.py
 
             - name: Generate the coverage report
               run: |
-                coverage run test_scrapping.py
                 coverage xml -o ${{ github.workspace }}/coverage.xml
 
             - name: Save result artifacts
@@ -61,7 +60,7 @@ jobs:
                 path: ${{ github.workspace }}/coverage.xml
 
     analyze:
-        name: Build and analyze
+        name: Analyze Through SonarQube
         runs-on: ubuntu-latest
         needs: test
 
@@ -88,6 +87,6 @@ jobs:
                 -Dsonar.projectKey=Sonarqube-Github
                 -Dsonar.projectName=Sonarqube-Github
                 -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-                -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/coverage.xml
+                -Dsonar.python.coverage.reportPaths=coverage.xml
                 -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
