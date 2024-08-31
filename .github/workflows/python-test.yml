@@ -96,10 +96,11 @@ jobs:
               
               #Checking for the items within the directory
               echo "Listing contents of the extracted directory:"
-              ls -l $currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin
+              ls -l $binPath
 
-              chmod +x $currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin/sonar-scanner
-              ls -l $currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin
+              #Giving permission
+              chmod +x $binPath/sonar-scanner
+              
               echo "All the current executable paths are"
               echo $PATH
               echo "The current sonar scanner version is at"
