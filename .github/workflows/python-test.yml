@@ -73,6 +73,11 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
     
+          - name: Set up JDK 17
+            uses: actions/setup-java@v3
+            with: 
+              java-version: '17'
+
           - name: Download Sonarqube Scanner
             run: |
               scannerPath="${{ github.workspace }}"
