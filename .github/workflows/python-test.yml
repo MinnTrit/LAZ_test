@@ -79,27 +79,9 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
             run: |
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-
-              #Define the directory for the extracted file
-              extractionDirectory="$HOME/sonar-scanner-cli"
-
-              #Create the directory
-              mkdir -p "$extractionDirectory"
-
-              #Extracted the file to the expected directory
-              unzip sonar-scanner-cli-4.8.0.2856-linux.zip -d "$extractionDirectory"
-              binPath="$extractionDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin"
-
-              #Setting up the environment variables
-              echo "$binPath" >> $GITHUB_PATH
-              export PATH="$PATH:$binPath"
-
-              #Checking the contens within the bin directory
-              cd "$binPath"
+              unzip sonar-scanner-cli-4.8.0.2856-linux.zip -d $(pwd)
+              cd sonar-scanner-cli-4.8.0.2856-linux/bin
               ls -a
-
-              echo "All the current executable paths are"
-              echo $PATH
               echo "The current sonar scanner version is at"
               sonar-scanner --version
               sonar-scanner \
