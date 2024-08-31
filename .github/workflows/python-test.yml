@@ -93,10 +93,6 @@ jobs:
               #Setting up the environment variables
               echo $binPath >> $GITHUB_PATH
               export PATH=$PATH:$binPath
-              
-              #Checking for the items within the directory
-              echo "Listing contents of the extracted directory:"
-              ls -l "$binPath"
 
               #Giving permission
               chmod +x "$binPath/sonar-scanner"
