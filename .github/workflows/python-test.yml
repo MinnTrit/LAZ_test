@@ -49,13 +49,18 @@ jobs:
               run: |
                 pytest test_scrapping.py
 
+            - name: Generate the coverage report
+              run: |
+                coverage run test_scrapping.py
+                coverage xml -o ${{ github.workspace }}/coverage.xml
+
             - name: Save result artifacts
               uses: actions/upload-artifact@v3
               with:
-                name: test-results
-                path: result.log
+                name: coverage-result
+                path: ${{ github.workspace }}/coverage.xml
 
-    build:
+    analyze:
         name: Build and analyze
         runs-on: ubuntu-latest
         needs: test
@@ -63,17 +68,15 @@ jobs:
         steps:        
           - name: Check out code
             uses: actions/checkout@v3
-            
-          - name: Install coverage
-            run: 
-              pip install coverage
 
-          - name: Generate Coverage Report
-            run: |
-              echo "File in the root directory"
+          - name: Download Coverage Result Artifact
+            uses: actions/download-artifact@v3
+            with:
+              name: coverage-result
+          
+          - name: List out the root directory
+            run: 
               ls -l ${{ github.workspace }}
-              coverage run ${{ github.workspace }}/test_scrapping.py
-              coverage xml -o ${{ github.workspace }}/coverage.xml
 
           - name: Set up and run SonarQube Scanner
             env:
