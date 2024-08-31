@@ -75,11 +75,11 @@ jobs:
     
           - name: Download Sonarqube Scanner
             run: |
-              scannerPath="${{ github.workspace }}/sonar-scanner"
+              scannerPath="${{ github.workspace }}"
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip 
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip -d $scannerPath
               echo "Items in the current directory"
-              ls -l "$scannerPath/sonar-scanner-cli-4.8.0.2856-linux"
+              ls -l "$scannerPath/sonar-scanner-cli-4.8.0.2856-linux/bin"
 
           - name: Set up the SonarQube executable path
             run: |
