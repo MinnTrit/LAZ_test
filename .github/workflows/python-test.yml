@@ -73,16 +73,21 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
     
-          - name: Generage the test suite coverage
-            env: 
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+          - name: Download Sonarqube Scanner
             run: |
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
               echo "Items in the current directory"
               ls -a
-              cd sonar-scanner-4.8.0.2856-linux/bin
+
+          - name: Set up the SonarQube executable path
+            run: echo "${{ github.workspace }}/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin" >> $GITHUB_PATH
+
+          - name: Run Sonarqube Scanner
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            run:
               . sonar-scanner \
                 -Dsonar.projectKey=Sonarqube-Github \ 
                 -Dsonar.projectName=Sonarqube-Github \ 
