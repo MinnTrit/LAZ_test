@@ -82,10 +82,8 @@ jobs:
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
               echo "Items in the current directory"
               ls -a
-              cd sonar-scanner-4.8.0.2856-linux
-              echo "Items inside the sonar-scanner"
-              ls -a
-              cd "sonar-scanner-cli-4.8.0.2856-linux/bin"
+              cd sonar-scanner-4.8.0.2856-linux/bin
+              echo "Items inside the bin"
               ls -a
               echo "The current sonar scanner version is at"
               sonar-scanner --version
