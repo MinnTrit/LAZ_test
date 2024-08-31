@@ -80,7 +80,7 @@ jobs:
               distribution: 'temurin'
             
           - name: Set up JAVA_HOME
-            run: echo "PATH=$PATH:/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_PATH
+            run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
             
           - name: Download Sonarqube Scanner
             run: |
