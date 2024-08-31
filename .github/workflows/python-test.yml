@@ -94,9 +94,9 @@ jobs:
             run: |
               echo $PATH 
               /home/runner/work/LAZ_test/LAZ_test/sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner \
-                -Dsonar.projectKey=Sonarqube-Github \ 
-                -Dsonar.projectName=Sonarqube-Github \ 
-                -Dsonar.host.url= ${{ secrets.SONAR_HOST_URL }} \ 
-                -Dsonar.python.coverage.reportPath=coverage.xml \
-                -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.projectKey=Sonarqube-Github \ 
+              -Dsonar.projectName=Sonarqube-Github \ 
+              -Dsonar.host.url= ${{ secrets.SONAR_HOST_URL }} \ 
+              -Dsonar.python.coverage.reportPath=coverage.xml \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
 
