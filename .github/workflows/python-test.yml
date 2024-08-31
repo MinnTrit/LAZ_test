@@ -78,7 +78,7 @@ jobs:
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
               currentDirectory=$(pwd)
-              echo 'export $currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin' >> $GITHUB_PATH
+              echo "$currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin" >> $GITHUB_PATH
               echo "The current executable paths are"
               echo $PATH
     
