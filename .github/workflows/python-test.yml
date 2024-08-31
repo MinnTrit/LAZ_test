@@ -83,10 +83,9 @@ jobs:
               echo "Items in the current directory"
               ls -a
               cd sonar-scanner-4.8.0.2856-linux/bin
-              echo "Items inside the bin"
-              ls -a
+              sonarPath="$(pwd)/sonar-scanner"
+              export PATH=$PATH:$sonarPath
               echo "The current sonar scanner version is at"
-              sonar-scanner --version
               sonar-scanner \
                 -Dsonar.projectKey=Sonarqube-Github \ 
                 -Dsonar.projectName=Sonarqube-Github \ 
