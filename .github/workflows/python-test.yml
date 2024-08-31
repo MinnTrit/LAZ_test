@@ -94,8 +94,9 @@ jobs:
               echo $binPath >> $GITHUB_PATH
               export PATH=$PATH:$binPath
 
-              #Giving permission
-              chmod +x "$binPath/sonar-scanner"
+              #Checking the contens within the bin directory
+              cd $binPath
+              ls -a
 
               echo "All the current executable paths are"
               echo $PATH
