@@ -80,6 +80,8 @@ jobs:
               currentDirectory=$(pwd)
               echo 'export PATH=$PATH:$currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin' >> ~/.bashrc
               source ~/.bashrc
+              echo "The current executable paths are"
+              echo $PATH
     
           - name: Generage the test suite coverage
             env: 
