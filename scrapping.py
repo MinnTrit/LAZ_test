@@ -36,7 +36,7 @@ def to_navigate(page):
                 print('The page has fully loaded')
                 current_retry += 3
         except Exception:
-            print('Error occurred while navigating the page')
+            print('Error occurred while navigating the page, captcha found')
             current_retry += 1
 
 def date_generator(start_date, end_date):
@@ -83,7 +83,7 @@ def search_product(page, input_product):
             print(f'Product {input_product} has been searched')
             current_retry += 3
         except Exception:
-            print('Error occured while searching the products')
+            print('Error occured while searching the products, captcha found')
             current_retry += 1
 
 def click_product(page, product_url):
@@ -115,7 +115,7 @@ def click_product(page, product_url):
             if next_button:
                 next_button.click()
         except Exception:
-            print('Error occured while click the product')
+            print('Error occured while click the product, capcha found')
             current_retry += 1
     return {
         'current_month': 0,
@@ -141,7 +141,7 @@ def get_total_ratings(page):
             else:
                 return 0
         except Exception:
-            print('Error occured while getting the total ratings')
+            print('Error occured while getting the total ratings, capcha found')
             current_retry += 1
     return 0
 
@@ -162,7 +162,7 @@ def get_selling_price(page):
             else:
                 return 0
         except Exception:
-            print('Error while getting the selling price')
+            print('Error while getting the selling price, capcha found')
             current_retry += 1
     return 0
     
@@ -212,13 +212,14 @@ def to_sort(page, sort_option):
                         time.sleep(1)
                         return "Found"
         except Exception:
-            print('Error occured while sorting the page')
+            print('Error occured while sorting the page, capcha found')
             current_retry += 1
     return "Not found"
 
 def next_page(page):
-    page.wait_for_selector('button.next-btn.next-btn-normal.next-btn-medium.next-pagination-item.next')
-    next_button = page.query_selector('button.next-btn.next-btn-normal.next-btn-medium.next-pagination-item.next')
+    next_page_element = 'button.next-btn.next-btn-normal.next-btn-medium.next-pagination-item.next'
+    page.wait_for_selector(next_page_element)
+    next_button = page.query_selector(next_page_element)
     if next_button:
         next_button.click()
 
@@ -309,7 +310,7 @@ def get_ratings(page):
                 else: 
                     return rating_count
             except Exception:
-                print('Captcha found, failed to capture the rating')
+                print('Captcha found, failed to capture the rating, capcha found')
                 return 0
     return rating_count
 
