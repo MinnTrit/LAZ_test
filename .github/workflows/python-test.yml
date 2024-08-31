@@ -60,7 +60,11 @@ jobs:
         runs-on: ubuntu-latest
         needs: test
 
-        steps:          
+        steps:        
+          - name: Install coverage
+            run: 
+              pip install coverage
+                
           - name: Generate Coverage Report
             run: |
               coverage run test_scrapping.py
