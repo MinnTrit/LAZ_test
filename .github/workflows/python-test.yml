@@ -77,10 +77,11 @@ jobs:
             run: |
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+          
+          - name: Set up the Sonarqube environment variables
+            run: 
               echo "SONAR_SCANNER_HOME=$(pwd)/sonar-scanner-cli-4.8.0.2856-linux" >> $GITHUB_ENV
-              echo "PATH=$(pwd)/sonar-scanner-cli-4.8.0.2856-linux/bin:$PATH" >> $GITHUB_ENV
-              echo "Current sonar scanner version is at"
-              sonar-scanner --version
+              echo "PATH=$SONAR_SCANNER_HOME/bin:$PATH" >> $GITHUB_ENV
 
           - name: Generage the test suite coverage
             env: 
