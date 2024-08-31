@@ -80,7 +80,11 @@ jobs:
             run: |
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-              cd sonar-scanner-cli-4.8.0.2856-linux/bin
+              echo "Current directory"
+              pwd
+              echo "Items in the current directory"
+              ls -a
+              cd "sonar-scanner-cli-4.8.0.2856-linux/bin"
               ls -a
               echo "The current sonar scanner version is at"
               sonar-scanner --version
