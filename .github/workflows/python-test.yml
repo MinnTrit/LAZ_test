@@ -80,8 +80,11 @@ jobs:
           
           - name: Set up the Sonarqube environment variables
             run: 
-              echo "SONAR_SCANNER_HOME=$(pwd)/sonar-scanner-cli-4.8.0.2856-linux" >> $GITHUB_ENV
-              echo "PATH=$SONAR_SCANNER_HOME/bin:$PATH" >> $GITHUB_ENV
+              echo 'export SONAR_SCANNER_HOME=$(pwd)/sonar-scanner-cli-4.8.0.2856-linux' >> ~/.bashrc
+              echo 'export PATH=$PATH:/sonar-scanner-cli-4.8.0.2856-linux/bin' >> ~/.bashrc
+              source ~/.bashrc
+              echo "Current sonar-scanner version"
+              sonar-scanner --version
 
           - name: Generage the test suite coverage
             env: 
