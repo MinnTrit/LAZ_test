@@ -96,11 +96,11 @@ jobs:
               
               #Checking for the items within the directory
               echo "Listing contents of the extracted directory:"
-              ls -l $binPath
+              ls -l "$binPath"
 
               #Giving permission
-              chmod +x $binPath/sonar-scanner
-              
+              chmod +x "$binPath/sonar-scanner"
+
               echo "All the current executable paths are"
               echo $PATH
               echo "The current sonar scanner version is at"
