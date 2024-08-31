@@ -73,38 +73,20 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-          - name: Install Java 17
-            uses: actions/setup-java@v3
-            with: 
-              java-version: '17'
-              distribution: 'temurin'
-            
-          - name: Set up JAVA_HOME
-            run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
-            
-          - name: Download Sonarqube Scanner
-            run: |
-              scannerPath="${{ github.workspace }}"
-              echo "The scanner path is $scannerPath"
-              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip 
-              unzip sonar-scanner-cli-4.8.0.2856-linux.zip -d $scannerPath
-              echo "Items in the current directory"
-              ls -l "$scannerPath/sonar-scanner-4.8.0.2856-linux/bin"
-
-          - name: Set up the SonarQube executable path
-            run: |
-              echo "${{ github.workspace }}/sonar-scanner-4.8.0.2856-linux/bin" >> $GITHUB_PATH
-              source ~/.bashrc
+          - name: Set up SonarQube Scanner
+            env:
+              GITHUB_TOKEN: ${{ github.token }}
+              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            uses: SonarSource/sonarcloud-github-action@v3
+            with:
+              args: >
+                -Dsonar.projectKey=Sonarqube-Github
+                -Dsonar.projectName=Sonarqube-Github
+                -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+                -Dsonar.python.coverage.reportPath=coverage.xml
+                -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
           - name: Run Sonarqube Scanner
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-            run: |
-              /home/runner/work/LAZ_test/LAZ_test/sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner \
-                -Dsonar.projectKey=Sonarqube-Github \
-                -Dsonar.projectName=Sonarqube-Github \
-                -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-                -Dsonar.python.coverage.reportPath=coverage.xml \
-                -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            run: 
+              sonar-scanner
 
