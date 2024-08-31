@@ -83,6 +83,8 @@ jobs:
               currentDirectory=$(pwd)
               echo "$currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin" >> $GITHUB_PATH
               export "PATH=$PATH:$currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin"
+              chmod +x $currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin/sonar-scanner
+              ls -l $currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin
               echo "All the current executable paths are"
               echo $PATH
               echo "The current sonar scanner version is at"
