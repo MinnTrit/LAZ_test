@@ -81,7 +81,9 @@ jobs:
               ls -a
 
           - name: Set up the SonarQube executable path
-            run: echo "${{ github.workspace }}/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin" >> $GITHUB_PATH
+            run: |
+              echo "${{ github.workspace }}/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin" >> $GITHUB_PATH
+              chmod +x /home/runner/work/LAZ_test/LAZ_test/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner
 
           - name: Run Sonarqube Scanner
             env:
@@ -89,6 +91,7 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             run: |
               echo $PATH 
+              ls -l /home/runner/work/LAZ_test/LAZ_test/sonar-scanner/sonar-scanner-4.8.0.2856-linux/bin
               sonar-scanner \
                 -Dsonar.projectKey=Sonarqube-Github \ 
                 -Dsonar.projectName=Sonarqube-Github \ 
