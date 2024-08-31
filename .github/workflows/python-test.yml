@@ -83,10 +83,7 @@ jobs:
               echo "Items in the current directory"
               ls -a
               cd sonar-scanner-4.8.0.2856-linux/bin
-              sonarPath="$(pwd)/sonar-scanner"
-              export PATH=$PATH:$sonarPath
-              echo "The current sonar scanner version is at"
-              sonar-scanner \
+              . sonar-scanner \
                 -Dsonar.projectKey=Sonarqube-Github \ 
                 -Dsonar.projectName=Sonarqube-Github \ 
                 -Dsonar.host.url= ${{ secrets.SONAR_HOST_URL }} \ 
