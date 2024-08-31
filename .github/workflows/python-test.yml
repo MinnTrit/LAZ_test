@@ -73,14 +73,22 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
 
+          - name: Install and set up Sonar Scanner
+            run: |
+              sudo su
+              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2928-linux.zip
+              unzip sonar-scanner-cli-4.7.0.2928-linux.zip
+              export PATH=$PATH:(pwd)/sonar-scanner-cli-4.7.0.2928-linux/bin
+
           - name: Generage the test suite coverage
             env: 
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
             run: |
-              -Dsonar.projectKey=Sonarqube-Github
-              -Dsonar.projectName=Sonarqube-Github
-              -Dsonar.host.url= ${{ secrets.SONAR_HOST_URL }}
-              -Dsonar.python.coverage.reportPath=coverage.xml
-              -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+              sonar-scanner \
+                -Dsonar.projectKey=Sonarqube-Github \ 
+                -Dsonar.projectName=Sonarqube-Github \ 
+                -Dsonar.host.url= ${{ secrets.SONAR_HOST_URL }} \ 
+                -Dsonar.python.coverage.reportPath=coverage.xml \
+                -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
 
