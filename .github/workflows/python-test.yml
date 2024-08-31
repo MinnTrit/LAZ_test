@@ -75,8 +75,10 @@ jobs:
 
           - name: Install and set up Sonar Scanner
             run: |
+              currentDirectory=$(pwd)
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+              echo $currentDirectory
     
           - name: Generage the test suite coverage
             env: 
