@@ -82,6 +82,8 @@ jobs:
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
               currentDirectory=$(pwd)
               echo "$currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin" >> $GITHUB_PATH
+              echo "$currentDirectory/sonar-scanner-cli-4.8.0.2856-linux/bin" >> ~/.bashrc
+              source ~/.bashrc
               echo "All the current executable paths are"
               echo $PATH
               echo "The current sonar scanner version is at"
