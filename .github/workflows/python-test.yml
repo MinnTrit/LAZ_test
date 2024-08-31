@@ -15,7 +15,7 @@ jobs:
         #Initialize the steps to run the tasks
         steps:
             - name: Checkout the code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Set up Python
               uses: actions/setup-python@v2
@@ -73,18 +73,21 @@ jobs:
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-          - name: Install JDK 17
+          - name: Install Java 17
             uses: actions/setup-java@v3
             with: 
               java-version: '17'
               distribution: 'temurin'
-
+            
+          - name: Set up JAVA_HOME
+            run: echo "PATH=$PATH:/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_PATH
+            
           - name: Download Sonarqube Scanner
             run: |
               scannerPath="${{ github.workspace }}"
               echo "The scanner path is $scannerPath"
-              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip 
-              unzip sonar-scanner-cli-4.8.0.2856-linux.zip -d $scannerPath
+              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.2856-linux.zip 
+              unzip sonar-scanner-cli-5.0.1.2856-linux.zip -d $scannerPath
               echo "Items in the current directory"
               ls -l "$scannerPath/sonar-scanner-4.8.0.2856-linux/bin"
 
