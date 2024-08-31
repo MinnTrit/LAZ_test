@@ -84,9 +84,5 @@ jobs:
                 -Dsonar.projectName=Sonarqube-Github
                 -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
                 -Dsonar.python.coverage.reportPaths=coverage.xml
-                -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
-          - name: Run Sonarqube Scanner
-            run: 
-              sonar-scanner
+                -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
