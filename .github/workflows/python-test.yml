@@ -30,6 +30,7 @@ jobs:
                 pip install playwright
                 pip install pytest
                 pip install pytest-cov
+                pip install coverage
                 playwright install
 
             - name: Set up environment variables
@@ -47,7 +48,12 @@ jobs:
 
             - name: Run tests
               run: |
-                pytest --cov=scrapping --cov-report=xml >> result.log
+                pytest test_scrapping.py
+            
+            - name: Generate Coverage Report
+              run: |
+                coverage run test_scrapping.py
+                coverage xml -d ${{ github.workspace }}
 
             - name: Save result artifacts
               uses: actions/upload-artifact@v3
@@ -60,22 +66,7 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:          
-          - name: Set up Sonarqube environment
-            uses: actions/checkout@v4
-            with: 
-              fetch-depth: 0
-          - uses: sonarsource/sonarqube-scan-action@v2
-            with:
-              args: >
-                -Dsonar.projectKey=Sonarqube-Github
-                -Dsonar.projectName=Sonarqube-Github
-                -Dsonar.projectVersion=1.0
-                -Dsonar.sources=.
-            env:
-              SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-              SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-          - name: Set up SonarQube Scanner
+          - name: Set up and run SonarQube Scanner
             env:
               GITHUB_TOKEN: ${{ github.token }}
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -85,6 +76,6 @@ jobs:
                 -Dsonar.projectKey=Sonarqube-Github
                 -Dsonar.projectName=Sonarqube-Github
                 -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-                -Dsonar.python.coverage.reportPaths=coverage.xml
+                -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/coverage.xml
                 -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
