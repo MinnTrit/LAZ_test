@@ -64,7 +64,7 @@ jobs:
           - name: Generate Coverage Report
             run: |
               coverage run test_scrapping.py
-              coverage xml -d ${{ github.workspace }}
+              coverage xml -o ${{ github.workspace }}/coverage.xml
 
           - name: Set up and run SonarQube Scanner
             env:
