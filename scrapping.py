@@ -8,9 +8,8 @@ import time
 from fuzzywuzzy import fuzz
 import json
 
-start_date = '2024-08-24'
+start_date = '2024-08-25'
 end_date = '2024-08-31'
-chromium_path = '/root/.cache/ms-playwright/chromium-1129/chrome-linux'
 chromium_path = os.getenv("CHROMIUM_PATH")
 executable_file = 'chrome.exe'
 executable_path = os.path.join(chromium_path, executable_file)
@@ -118,6 +117,11 @@ def click_product(page, product_url):
         except Exception:
             print('Error occured while click the product')
             current_retry += 1
+    return {
+        'current_month': 0,
+        'selling_price':0,
+        'rating_value':0
+    }
 
 def get_total_ratings(page):
     retries = 2
@@ -331,11 +335,14 @@ if __name__ == '__main__':
         to_navigate(page)
         print(f'Connected to page {page}')
         search_product(page, product_name)
-        click_product(page, product_url)
-        print("Start getting the SKUs'information")
-        final_map = get_sku_informations(page, sort_option)
-        #Push to the clipboard
-        index = ['current_month', 'rating_value', 'selling_price']
-        df = pd.DataFrame(final_map, index=index)
-        df.drop_duplicates(subset=['current_month', 'rating_value', 'selling_price'], keep='last', inplace=True)
-        df.to_clipboard(index=False, header=False)
+        final_map = click_product(page, product_url)
+        if final_map:
+            print('Fail getting the products')
+            df = pd.DataFrame(final_map, index='rating')
+            df.to_clipboard(index=False, header=False)
+        else:
+            print("Start getting the SKUs'information")
+            final_map = get_sku_informations(page, sort_option)
+            #Push to the clipboard
+            df = pd.DataFrame(final_map, index='rating')
+            df.to_clipboard(index=False, header=False)
