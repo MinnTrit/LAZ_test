@@ -75,10 +75,11 @@ jobs:
 
           - name: Install and set up Sonar Scanner
             run: |
-              sudo su
               wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
               unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-              export PATH=$PATH:$(pwd)/sonar-scanner-cli-4.8.0.2856-linux/bin
+              echo "sonar-scanner-cli-4.8.0.2856-linx/bin" >> $GITHUB_ENV
+              echo "Current sonar scanner version is at"
+              sonar-scanner --version
 
           - name: Generage the test suite coverage
             env: 
