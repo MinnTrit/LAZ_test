@@ -46,13 +46,15 @@ jobs:
               run: pwd
 
             - name: Run tests
-              run: python test_scrapping.py
+              run: |
+                pytest --cov=scrapping --cov-report=xml >> result.log
 
             - name: Save result artifacts
               uses: actions/upload-artifact@v3
               with:
                 name: test-results
                 path: result.log
+
     build:
         name: Build and analyze
         runs-on: ubuntu-latest
