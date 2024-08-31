@@ -87,8 +87,7 @@ jobs:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
             run: |
-              echo "The current executable paths are"
-              echo $PATH
+              cd "/home/runner/work/LAZ_test/LAZ_test/sonar-scanner-cli-4.8.0.2856-linux/bin"
               sonar-scanner --version
               sonar-scanner \
                 -Dsonar.projectKey=Sonarqube-Github \ 
