@@ -28,7 +28,6 @@ jobs:
                 pip install fuzzywuzzy
                 pip install pandas
                 pip install playwright
-                pip install sonar-scanner
                 pip install pytest
                 pip install pytest-cov
                 playwright install
