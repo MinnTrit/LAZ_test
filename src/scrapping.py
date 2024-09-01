@@ -211,8 +211,8 @@ def check_continue(page, temp_list, start_date, end_date):
         print(f'Find no next button to press, resolved error {e}')
         return False
     for datetime_obj in temp_list:
-        if (datetime_obj >= previous_start_date and datetime_obj <= previous_end_date) or \
-        (datetime_obj < previous_start_date):
+        if (datetime_obj.date() >= previous_start_date.date() and datetime_obj.date() <= previous_end_date.date()) or \
+        (datetime_obj.date() < previous_start_date.date()):
             temp_list = []
             return False
     temp_list = []
@@ -237,46 +237,50 @@ def get_ratings(page):
     total_pages = 60
     current_page = 0
     while current_page < total_pages:
-        temp_list = []
-        page.wait_for_selector('div.mod-reviews')
-        ratings_div = page.query_selector('div.mod-reviews')
-        if ratings_div:
-            current_page += 1
-            all_items = ratings_div.query_selector_all('div.item')
-            for item in all_items:
-                to_use_text_map = False
-                date_string = item.query_selector('div.top span').text_content().lower()
-                for text in text_list:
-                    if text in date_string:
-                        to_use_text_map = True
-                        break
-                if to_use_text_map is False:
-                    day_string = re.search(day_pattern, date_string).group(1)
-                    year_string = re.search(year_pattern, date_string).group(1)
-                    month_string = month_map.get(re.search(month_pattern, date_string).group(1), "")
-                    final_string = f'{year_string}-{month_string}-{day_string}'
-                    datetime_obj = convert_to_datetime(final_string)
-                    temp_list.append(datetime_obj)
-                    if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
-                        rating_count += 1
-                else:
-                    current_date = datetime.now() - timedelta(days=1)
-                    ago_value = int(re.search(ago_pattern, date_string).group(1))
-                    delay_value = int(text_map.get(re.search(delay_pattern, date_string).group(1)))
-                    delay_days = ago_value * delay_value
-                    datetime_obj = current_date - timedelta(days=delay_days)
-                    temp_list.append(datetime_obj)
-                    if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
-                        rating_count += 1
-            to_continue = check_continue(page, temp_list, start_date, end_date)
-            try: 
-                if to_continue is True:
-                    next_page(page)
-                else: 
-                    return rating_count
-            except Exception:
-                print('Captcha found, failed to capture the rating, capcha found')
-                return 0
+        try:
+            temp_list = []
+            page.wait_for_selector('div.mod-reviews')
+            ratings_div = page.query_selector('div.mod-reviews')
+            if ratings_div:
+                current_page += 1
+                all_items = ratings_div.query_selector_all('div.item')
+                for item in all_items:
+                    to_use_text_map = False
+                    date_string = item.query_selector('div.top span').text_content().lower()
+                    for text in text_list:
+                        if text in date_string:
+                            to_use_text_map = True
+                            break
+                    if to_use_text_map is False:
+                        day_string = re.search(day_pattern, date_string).group(1)
+                        year_string = re.search(year_pattern, date_string).group(1)
+                        month_string = month_map.get(re.search(month_pattern, date_string).group(1), "")
+                        final_string = f'{year_string}-{month_string}-{day_string}'
+                        datetime_obj = convert_to_datetime(final_string)
+                        temp_list.append(datetime_obj)
+                        if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
+                            rating_count += 1
+                    else:
+                        current_date = datetime.now() - timedelta(days=1)
+                        ago_value = int(re.search(ago_pattern, date_string).group(1))
+                        delay_value = int(text_map.get(re.search(delay_pattern, date_string).group(1)))
+                        delay_days = ago_value * delay_value
+                        datetime_obj = current_date - timedelta(days=delay_days)
+                        temp_list.append(datetime_obj)
+                        if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
+                            rating_count += 1
+                to_continue = check_continue(page, temp_list, start_date, end_date)
+        except Exception:
+            print('Captcha found, fail getting the current ratings')
+            return 0
+        try: 
+            if to_continue is True:
+                next_page(page)
+            else: 
+                return rating_count
+        except Exception:
+            print('Captcha found, failed to capture the rating, capcha found')
+            return 0
     return rating_count
 
 if __name__ == '__main__':
