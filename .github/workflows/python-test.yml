@@ -47,7 +47,7 @@ jobs:
 
             - name: Run tests
               run: |
-                coverage run test_scrapping.py
+                coverage run ${{ github.workspace}}/tests/test_scrapping.py
 
             - name: Generate the coverage report
               run: |
@@ -97,7 +97,7 @@ jobs:
 
       steps:
       - name: Check out code
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-actions@v3
