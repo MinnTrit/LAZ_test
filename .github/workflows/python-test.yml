@@ -35,6 +35,9 @@ jobs:
             - name: Set up environment variables
               run: echo "CHROMIUM_PATH=/home/runner/.cache/ms-playwright/chromium-1129/chrome-linux" >> $GITHUB_ENV
 
+            - name: Set up Python Path
+              run: echo "PYTHONPATH=${{ github.workspace }}/src" >> $GITHUB_ENV
+
             - name: Install Additional GI Libraries
               run: |
                 sudo apt-get update
@@ -47,7 +50,7 @@ jobs:
 
             - name: Run tests
               run: |
-                coverage run ${{ github.workspace}}/tests/test_scrapping.py
+                coverage run -m pytest ${{ github.workspace}}/tests/test_scrapping.py
 
             - name: Generate the coverage report
               run: |
