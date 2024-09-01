@@ -50,7 +50,7 @@ jobs:
 
             - name: Run tests
               run: |
-                coverage run -m pytest ${{ github.workspace}}/tests/test_scrapping.py
+                coverage run -m pytest
 
             - name: Generate the coverage report
               run: |
