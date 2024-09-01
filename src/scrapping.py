@@ -322,6 +322,8 @@ if __name__ == '__main__':
             selling_price = get_selling_price(page)
             if sort_decision == "Found":
                 ratings = get_ratings(page)
+            else:
+                ratings = 0
             print(f'Total ratings: {rating_value}')
             print(f'Selling price: {selling_price}')
             print(f'Rating this month: {ratings}')

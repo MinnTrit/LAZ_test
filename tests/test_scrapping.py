@@ -38,6 +38,8 @@ class TestPlaywrightFunctions(unittest.TestCase):
         selling_price = get_selling_price(self.page)
         if sort_decision == "Found":
             ratings = get_ratings(self.page)
+        else:
+            ratings = 0
         print(f'Total ratings: {rating_value}')
         print(f'Selling price: {selling_price}')
         print(f'Rating this month: {ratings}')
