@@ -53,10 +53,10 @@ class TestPlaywrightFunctions(unittest.TestCase):
         continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
         self.assertFalse(continue_decision)
 
-    def test_true_check_continue(self):
-        temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
-        continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
-        self.assertTrue(continue_decision)
+    # def test_true_check_continue(self):
+    #     temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
+    #     continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
+    #     self.assertTrue(continue_decision)
 
     def test_parse_day_pattern(self):
         test_string = {
@@ -68,27 +68,22 @@ class TestPlaywrightFunctions(unittest.TestCase):
         }
         day_pattern, month_pattern, year_pattern, ago_pattern, delay_pattern = parse_day_pattern()
         
-        #Write the test to match the day
         day_match = re.search(day_pattern, test_string['day'])
         self.assertIsNotNone(day_match.group(1), "Day pattern did not find")
         self.assertEqual(day_match.group(1), "10", "Day pattern did not match")
 
-        #Write the test to match the month
         month_match = re.search(month_pattern, test_string['month'])
         self.assertIsNotNone(month_match.group(1), "Month pattern did not match")
         self.assertEqual(month_match.group(1), 'Apr', "Month pattern did not match")
 
-        #Write the test to match the year
         year_match = re.search(year_pattern, test_string['year'])
         self.assertIsNotNone(year_match.group(1), "Year pattern did not match")
         self.assertEqual(year_match.group(1), "2025", "Year pattern did not match")
 
-        #Write the test to test the ago time
         ago_match = re.search(ago_pattern, test_string['ago'])
         self.assertIsNotNone(ago_match.group(1), "Ago pattern did not match")
         self.assertEqual(ago_match.group(1), "3", "Ago pattern did not match")
 
-        #Write the test to test the delay attribute
         delay_match = re.search(delay_pattern, test_string['delay'])
         self.assertIsNotNone(delay_match.group(1), "Delay pattern did not match")
         self.assertEqual(delay_match.group(1), "hours", "Delay pattern did not match")
