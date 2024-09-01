@@ -1,6 +1,9 @@
 import unittest
 from playwright.sync_api import sync_playwright
 from src.scrapping import (
+    convert_to_datetime,
+    get_text_map,
+    get_month_map,
     to_navigate,
     search_product,
     click_product,
@@ -10,6 +13,7 @@ from src.scrapping import (
     get_ratings
 )
 import os
+import datetime
 
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
@@ -25,6 +29,22 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.page.close()
         self.browser.close()
         self.playwright.stop()
+
+    def test_get_month_map(self):
+        month_map = get_month_map()
+        self.assertIsInstance(month_map, dict)
+
+    def test_get_text_map(self):
+        text_map = get_text_map()
+        self.assertIsInstance(text_map, dict)
+
+    def test_convert_to_datetime(self):
+        first_test_string = '2024-07-08'
+        second_test_string = '24-07-08'
+        first_datetime = convert_to_datetime(first_test_string)
+        second_datetime = convert_to_datetime(second_test_string)
+        self.assertIsInstance(first_datetime, datetime)
+        self.assertIsInstance(second_datetime, datetime)
 
     def test_search_product(self):
         input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
