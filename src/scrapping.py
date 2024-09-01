@@ -71,6 +71,7 @@ def search_product(page, input_product):
                 search_bar.fill(input_product)
             page.keyboard.press("Enter")
             print(f'Product {input_product} has been searched')
+            page.wait_for_load_state('load')
             current_retry += 3
         except Exception:
             print('Error occured while searching the products, captcha found')
