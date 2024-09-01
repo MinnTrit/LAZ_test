@@ -11,7 +11,7 @@ import json
 start_date = '2024-08-25'
 end_date = '2024-08-31'
 chromium_path = os.getenv("CHROMIUM_PATH")
-executable_file = 'chrome.exe'
+executable_file = 'chrome'
 executable_path = os.path.join(chromium_path, executable_file)
 headless_option = False
 sort_option = 'recent'
@@ -314,23 +314,6 @@ def get_ratings(page):
                 return 0
     return rating_count
 
-def get_sku_informations(page, sort_option):
-    sort_decision = to_sort(page, sort_option)
-    rating_value = get_total_ratings(page)
-    selling_price = get_selling_price(page)
-    if sort_decision == "Found":
-        ratings = get_ratings(page)
-    else:
-        ratings = 0
-    print(f'Total ratings: {rating_value}')
-    print(f'Selling price: {selling_price}')
-    print(f'Rating this month: {ratings}')
-    return {
-        'current_month': ratings,
-        'rating_value': rating_value,
-        'selling_price':selling_price
-        }
-
 if __name__ == '__main__':
     with sync_playwright() as pw: 
         print('Start connecting to the browser')
@@ -350,7 +333,21 @@ if __name__ == '__main__':
             df.to_clipboard(index=False, header=False)
         else:
             print("Start getting the SKUs'information")
-            final_map = get_sku_informations(page, sort_option)
+            sort_decision = to_sort(page, sort_option)
+            rating_value = get_total_ratings(page)
+            selling_price = get_selling_price(page)
+            if sort_decision == "Found":
+                ratings = get_ratings(page)
+            else:
+                ratings = 0
+            print(f'Total ratings: {rating_value}')
+            print(f'Selling price: {selling_price}')
+            print(f'Rating this month: {ratings}')
+            final_map = {
+                'current_month': ratings,
+                'rating_value': rating_value,
+                'selling_price':selling_price
+                }
             #Push to the clipboard
             df = pd.DataFrame(final_map, index='rating')
             df.to_clipboard(index=False, header=False)

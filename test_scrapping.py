@@ -4,9 +4,11 @@ from scrapping import (
     to_navigate,
     search_product,
     click_product,
-    get_sku_informations
+    get_total_ratings,
+    get_selling_price,
+    to_sort,
+    get_ratings
 )
-import threading
 import os
 
 class TestPlaywrightFunctions(unittest.TestCase):
@@ -31,7 +33,21 @@ class TestPlaywrightFunctions(unittest.TestCase):
         search_product(self.page, input_product)
         click_product(self.page, product_url)
         sort_option='recent'
-        final_map = get_sku_informations(self.page, sort_option)
+        sort_decision = to_sort(self.page, sort_option)
+        rating_value = get_total_ratings(self.page)
+        selling_price = get_selling_price(self.page)
+        if sort_decision == "Found":
+            ratings = get_ratings(self.page)
+        else:
+            ratings = 0
+            print(f'Total ratings: {rating_value}')
+            print(f'Selling price: {selling_price}')
+            print(f'Rating this month: {ratings}')
+            final_map = {
+                'current_month': ratings,
+                'rating_value': rating_value,
+                'selling_price':selling_price
+                }
         self.assertIsInstance(final_map, dict)
 
 if __name__ == '__main__':
