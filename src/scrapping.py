@@ -39,16 +39,6 @@ def to_navigate(page):
             print('Error occurred while navigating the page, captcha found')
             current_retry += 1
 
-def date_generator(start_date, end_date):
-    start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    generated_dates = []
-    current_date = start_date
-    while current_date <= end_date:
-        generated_dates.append(current_date.strftime('%Y-%m-%d'))
-        current_date += timedelta(days=1)
-    return generated_dates
-
 def get_text_map():
     text_map = {
         'weeks': 7,
@@ -135,7 +125,7 @@ def get_total_ratings(page):
                 rating_text = rating_div.text_content()
                 re_found = re.search(matching_pattern, rating_text)
                 if re_found:
-                    return re_found.group(1)
+                    return int(re_found.group(1))
                 else:
                     return 0
             else:
@@ -156,7 +146,7 @@ def get_selling_price(page):
             if price_text:
                 price_value = re.search(matching_pattern, price_text.text_content())
                 if price_value:
-                    return price_value.group(1)
+                    return int(price_value.group(1))
                 else:
                     return 0
             else:
@@ -227,19 +217,6 @@ def check_continue(page, temp_list):
             return False
     temp_list = []
     return True
-
-def get_clean_string(customore_string):
-    clean_url = customore_string.replace(re.search(r'.*(-s\d+).*', customore_string).group(1), "")
-    return clean_url
-
-def read_dataframe():
-    current_directory = os.getcwd()
-    file_name = 'scrapping_laz.xlsx'
-    file_path = os.path.join(current_directory, file_name)
-    df = pd.read_excel(file_path)
-    df['clean_url'] = df['products_url'].apply(lambda row: get_clean_string(row))
-    df.drop(columns=['products_url'], inplace=True)
-    return df.values.tolist()
 
 def parse_day_pattern():
     day_pattern = r'(\d+)\s+\w+'
