@@ -28,7 +28,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
         cls.executable_path = os.path.join(cls.chromium_path, "chrome")
         cls.playwright = sync_playwright().start()
-        cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=False)
+        cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
         cls.page = cls.browser.new_page()
         to_navigate(cls.page)
         search_product(cls.page, input_product)
