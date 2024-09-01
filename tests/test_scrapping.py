@@ -12,7 +12,7 @@ from src.scrapping import (
     get_selling_price,
     to_sort,
     get_ratings,
-    to_continue,
+    check_continue,
     parse_day_pattern
 )
 import os
@@ -48,14 +48,14 @@ class TestPlaywrightFunctions(unittest.TestCase):
         text_map = get_text_map()
         self.assertIsInstance(text_map, dict)
 
-    def test_false_to_continue(self):
+    def test_false_check_continue(self):
         temp_list = ['2024-08-12', '2024-07-31']
-        continue_decision = to_continue(self.page, temp_list)
+        continue_decision = check_continue(self.page, temp_list)
         self.assertFalse(continue_decision)
 
-    def test_true_to_continue(self):
+    def test_true_check_continue(self):
         temp_list = ['2024-08-19', '2024-08-10']
-        continue_decision = to_continue(self.page, temp_list)
+        continue_decision = check_continue(self.page, temp_list)
         self.assertTrue(continue_decision)
 
     def test_parse_day_pattern(self):
