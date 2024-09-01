@@ -1,11 +1,11 @@
 import unittest
+from unittest.mock import MagicMock, patch
 import re
 from playwright.sync_api import sync_playwright
-from src.scrapping import (
+from scrapping import (
     convert_to_datetime,
     get_text_map,
     get_month_map,
-    to_navigate,
     search_product,
     click_product,
     get_total_ratings,
@@ -13,26 +13,26 @@ from src.scrapping import (
     to_sort,
     get_ratings,
     check_continue,
-    parse_day_pattern
+    parse_day_pattern,
+    next_page
 )
 import os
 from datetime import datetime
+import random
 
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.start_date = '2024-08-01'
         cls.end_date = '2024-08-31'
-        input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
-        product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
+        cls.product_name = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
+        cls.product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
         cls.executable_path = os.path.join(cls.chromium_path, "chrome")
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
         cls.page = cls.browser.new_page()
-        to_navigate(cls.page)
-        search_product(cls.page, input_product)
-        click_product(cls.page, product_url)
+        cls.page.goto('https://www.lazada.com.ph')
 
     @classmethod
     def tearDownClass(cls):
@@ -48,15 +48,51 @@ class TestPlaywrightFunctions(unittest.TestCase):
         text_map = get_text_map()
         self.assertIsInstance(text_map, dict)
 
-    def test_false_check_continue(self):
-        temp_list = [datetime(2024, 7, 10), datetime(2024, 8, 17)]
-        continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
-        self.assertFalse(continue_decision)
+    def test_search_and_click_product(self):
+        search_product(self.page, self.product_name)
+        self.page.wait_for_load_state('load')
+        self.page.wait_for_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last')
+        search_string = self.page.query_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last').text_content()
+        self.assertEqual(search_string, 'Search Results')
+        click_product(self.page, self.product_url)
+        self.page.wait_for_load_state('load')
+        self.page.wait_for_selector('div.pdp-mod-product-badge-wrapper')
+        product_string = self.page.query_selector('div.pdp-mod-product-badge-wrapper').text_content()
+        self.assertEqual(product_string, self.product_name)
 
-    # def test_true_check_continue(self):
-    #     temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
-    #     continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
-    #     self.assertTrue(continue_decision)
+    @patch('scrapping.Page')
+    def test_check_continue(self, MockPage):
+        #Initialize the mock objects
+        mock_page = MockPage.return_value
+        mock_page.query_selector.get_attribute.return_value = 'Enable'
+        temp_list = [datetime(2024, 7, 10), datetime(2024, 8, 17)]
+        continue_decision = check_continue(mock_page, temp_list, self.start_date, self.end_date)
+        self.assertFalse(continue_decision)
+        mock_page.query_selector.assert_called_once()
+
+    @patch('scrapping.Page')
+    def test_true_check_continue(self, MockPage):
+        #Initialize the mock objects
+        mock_page = MockPage.return_value
+        mock_button = MagicMock()
+        mock_button.get_attribute.return_value = 'Enable'
+        temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
+        continue_decision = check_continue(mock_page, temp_list, self.start_date, self.end_date)
+        self.assertTrue(continue_decision)
+        mock_page.query_selector.assert_called_once()
+
+    @patch('scrapping.Page')
+    def test_disable_check_continue(self, MockPage):
+        #Initialize the mock objects
+        mock_button = MagicMock()
+        mock_page = MockPage.return_value
+        mock_page.query_selector.return_value = mock_button
+        mock_button.get_attribute.return_value = ''
+        temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
+        continue_decision = check_continue(mock_page, temp_list, self.start_date, self.end_date)
+        self.assertFalse(continue_decision)
+        mock_page.query_selector.assert_called_once()
+        mock_button.get_attribute.assert_called_once_with('disabled')
 
     def test_parse_day_pattern(self):
         test_string = {
@@ -96,33 +132,115 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertIsInstance(first_datetime, datetime)
         self.assertIsInstance(second_datetime, datetime)
 
-    def test_to_sort(self):
+    @patch('scrapping.Page')
+    def test_to_sort(self, MockPage):
+        #Initialize the mock objects
+        mock_page = MockPage.return_value
+        mock_sort_div = MagicMock()
+        mock_ul_element = MagicMock()
+        mock_li_elements = [MagicMock() for _ in range(4)]
+
+        #Configure the mock behaviors
+        mock_sort_div.click = MagicMock()
+        mock_ul_element.query_selector_all.return_value = mock_li_elements
+
+        #Create the mock page
+        mock_page = MagicMock()
+        mock_page.wait_for_selector.return_value = None
+        mock_page.wait_for_timeout.return_value = None
+        mock_page.evaluate.side_effect = [1000, 3000, 0]
+        mock_page.query_selector.return_value = mock_ul_element
+        mock_page.query_selector_all.side_effect = [
+            [MagicMock(), mock_sort_div],
+            [mock_li_elements]
+        ]
+        #Trigger the mock objects
+        mock_li_elements[0].text_content.return_value = 'Relevance'
+        mock_li_elements[1].text_content.return_value = 'Recent'
+        mock_li_elements[2].text_content.return_value = 'Rating: High to Low'
+        mock_li_elements[3].text_content.return_value = 'Rating: Low to High'
+        
+        for li in mock_li_elements:
+            li.click = MagicMock()
+
         sort_option='recent'
-        sort_decision = to_sort(self.page, sort_option)
+        sort_decision = to_sort(mock_page, sort_option)
         self.assertIsInstance(sort_decision, str)
+        self.assertEqual(sort_decision, "Found")
+        mock_page.wait_for_selector.assert_called()
+        mock_page.evaluate.assert_called()
+        mock_page.query_selector_all.assert_called()
+        mock_sort_div.click.assert_called_once()
+        mock_page.wait_for_selector.assert_called()
+        mock_page.query_selector.assert_called()
+        mock_ul_element.query_selector_all.assert_called()
+        mock_li_elements[1].click.assert_called_once()
 
-    def test_get_total_ratings(self):
-        rating_value = get_total_ratings(self.page)
+    @patch('scrapping.Page')
+    def test_get_total_ratings(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.wait_for_load_state.return_value = None
+        rating_div = MagicMock()
+        mock_page.query_selector.return_value = rating_div
+        rating_div.text_content.return_value = '8347 Ratings'
+        rating_value = get_total_ratings(mock_page)
         self.assertIsInstance(rating_value, int)
+        mock_page.wait_for_load_state.assert_called()
+        mock_page.query_selector.assert_called_once()
+        rating_div.text_content.assert_called_once()
     
-    def test_get_selling_price(self):
-        selling_price = get_selling_price(self.page)
-        self.assertIsInstance(selling_price, int)
+    @patch('scrapping.Page')
+    def test_get_selling_price(self, MockPage):
+        #Initialize the mock objects
+        mock_page = MockPage.return_value
+        mock_page.wait_for_selector.return_value = None
+        mock_price_element = MagicMock()
+        mock_page.query_selector.return_value = mock_price_element
+        mock_price_element.text_content.return_value = '₱166.46'
 
-    def test_get_ratings(self):
-        ratings = get_ratings(self.page)
+        selling_price = get_selling_price(mock_page)
+        self.assertIsInstance(selling_price, float)
+        self.assertEqual(selling_price, 166.46)
+        mock_page.wait_for_selector.assert_called_once()
+        mock_page.query_selector.assert_called_once()
+        mock_price_element.text_content.assert_called_once()
+
+    @patch('scrapping.Page')
+    def test_get_ratings(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.wait_for_selector.return_value = None
+        #Create the rating div
+        mock_rating_div = MagicMock()
+        mock_page.query_selector.return_value = mock_rating_div
+        mock_items_div = [MagicMock() for _ in range(10)]
+        mock_rating_div.query_selector_all.return_value = mock_items_div
+        for item in mock_items_div:
+            random_day = random.randint(1,28)
+            random_month = random.randint(1, 12)
+            datetime_obj = datetime(2024, random_month, random_day)
+            date_string = datetime_obj.strftime('%d %b %Y').lower()
+            item.query_selector.return_value.text_content.return_value = date_string
+
+        ratings = get_ratings(mock_page)
         self.assertIsInstance(ratings, int)
+        mock_page.query_selector.assert_called()
+        mock_rating_div.query_selector_all.assert_called_once_with('div.item')
+        for item in mock_items_div:
+            item.query_selector.return_value.text_content.assert_called()
+    
+    @patch('scrapping.Page')
+    def test_next_page(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.wait_for_selector.return_value = None
+        mock_button = MagicMock()
+        mock_page.query_selector.return_value = mock_button
+        mock_button.click.return_value = None
 
-    def test_full_work_flow(self):
-        rating_value = get_total_ratings(self.page)
-        selling_price = get_selling_price(self.page)
-        current_rating = get_ratings(self.page)
-        final_map = {
-            'rating_value': rating_value,
-            'selling_price': selling_price,
-            'current_rating': current_rating
-        }
-        self.assertIsInstance(final_map, dict)
+        next_page(mock_page)
+        next_page_element = 'button.next-btn.next-btn-normal.next-btn-medium.next-pagination-item.next'
+        mock_page.wait_for_selector.assert_called_once_with(next_page_element)
+        mock_page.query_selector.assert_called_once_with(next_page_element)
+        mock_button.click.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()

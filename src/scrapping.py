@@ -1,4 +1,4 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, Page
 import os
 import re
 import calendar
@@ -140,13 +140,16 @@ def get_selling_price(page):
     current_retry = 0
     while current_retry < retries:
         try:
-            matching_pattern = r'(\d+[^a-zA-Z0-9]\d+)'
+            matching_pattern = r'(\d+[^a-zA-Z0-9]\d+|\d+)'
             page.wait_for_selector('div.pdp-product-price')
-            price_text = page.query_selector('div.pdp-product-price span')
-            if price_text:
-                price_value = re.search(matching_pattern, price_text.text_content())
+            price_element = page.query_selector('div.pdp-product-price span')
+            if price_element:
+                price_value = re.search(matching_pattern, price_element.text_content())
                 if price_value:
-                    return int(price_value.group(1))
+                    try:
+                        return int(price_value.group(1))
+                    except Exception:
+                        return float(price_value.group(1))
                 else:
                     return 0
             else:
