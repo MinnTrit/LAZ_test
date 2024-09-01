@@ -241,13 +241,19 @@ def read_dataframe():
     df.drop(columns=['products_url'], inplace=True)
     return df.values.tolist()
 
+def parse_day_pattern():
+    day_pattern = r'(\d+)\s+\w+'
+    year_pattern = r'\w+\s+(\d+)'
+    month_pattern = r'\d+\s+(\w+)\s+\d+'
+    ago_pattern = r'(\d+)\s+\w+\s+\w+'
+    delay_pattern = r'\d+\s+(\w+)\s+\w+' 
+    return day_pattern, month_pattern, year_pattern, ago_pattern, delay_pattern
+
 def get_ratings(page):
     rating_count = 0
     start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') 
-    day_pattern = r'(\d+)\s+\w+'
-    year_pattern = r'\w+\s+(\d+)'
-    month_pattern = r'\d+\s+(\w+)\s+\d+'
+    day_pattern, month_pattern, year_pattern, ago_pattern, delay_pattern = parse_day_pattern()
     month_map = get_month_map()
     text_map = get_text_map()
     text_list = list(text_map.keys())
@@ -278,8 +284,6 @@ def get_ratings(page):
                         rating_count += 1
                 else:
                     current_date = datetime.now() - timedelta(days=1)
-                    ago_pattern = r'(\d+)\s+\w+\s+\w+'
-                    delay_pattern = r'\d+\s+(\w+)\s+\w+'
                     ago_value = int(re.search(ago_pattern, date_string).group(1))
                     delay_value = int(text_map.get(re.search(delay_pattern, date_string).group(1)))
                     delay_days = ago_value * delay_value
