@@ -1,6 +1,6 @@
 import unittest
 from playwright.sync_api import sync_playwright
-from scrapping import (
+from src.scrapping import (
     to_navigate,
     search_product,
     click_product,
