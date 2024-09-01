@@ -99,6 +99,7 @@ def click_product(page, product_url):
                 laz_clean_url = re.search(trim_pattern, laz_product_url).group(1)
                 if fuzz.ratio(laz_clean_url, product_url) >= similarity_raito:
                     product.click()
+                    page.wait_for_load_state('load')
                     print('The product has been clicked')
                     return
             next_button = page.query_selector_all('button.ant-pagination-item-link')[1]
