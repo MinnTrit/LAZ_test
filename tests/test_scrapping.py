@@ -51,13 +51,9 @@ class TestPlaywrightFunctions(unittest.TestCase):
 
     def test_search_and_click_product(self):
         search_product(self.page, self.product_name)
-        self.page.wait_for_load_state('load')
-        self.page.wait_for_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last')
         search_string = self.page.query_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last').text_content()
         self.assertEqual(search_string, 'Search Results')
         click_product(self.page, self.product_url)
-        self.page.wait_for_load_state('load')
-        self.page.wait_for_selector('div.pdp-mod-product-badge-wrapper')
         product_string = self.page.query_selector('div.pdp-mod-product-badge-wrapper').text_content()
         self.assertEqual(product_string, self.product_name)
 
