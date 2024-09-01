@@ -22,27 +22,22 @@ import random
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
+        product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
         cls.executable_path = os.path.join(cls.chromium_path, "chrome")
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
+        cls.page = cls.browser.new_page()
+        to_navigate(cls.page)
+        search_product(cls.page, input_product)
+        click_product(cls.page, product_url)
 
     @classmethod
     def tearDown(cls):
         cls.page.close()
         cls.browser.close()
         cls.playwright.stop()
-
-    def setUp(self):
-        self.start_date = '2024-08-01'
-        self.end_date = '2024-08-30'
-        input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
-        product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
-        self.page = self.browser.new_page()
-        to_navigate(self.page)
-        search_product(self.page, input_product)
-        click_product(self.page, product_url)
-
 
     def test_get_month_map(self):
         month_map = get_month_map()
