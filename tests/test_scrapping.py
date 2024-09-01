@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 import re
 from playwright.sync_api import sync_playwright
-from scrapping import (
+from src.scrapping import (
     convert_to_datetime,
     get_text_map,
     get_month_map,
@@ -60,7 +60,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         product_string = self.page.query_selector('div.pdp-mod-product-badge-wrapper').text_content()
         self.assertEqual(product_string, self.product_name)
 
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_check_continue(self, MockPage):
         #Initialize the mock objects
         mock_page = MockPage.return_value
@@ -70,7 +70,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertFalse(continue_decision)
         mock_page.query_selector.assert_called_once()
 
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_true_check_continue(self, MockPage):
         #Initialize the mock objects
         mock_page = MockPage.return_value
@@ -81,7 +81,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertTrue(continue_decision)
         mock_page.query_selector.assert_called_once()
 
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_disable_check_continue(self, MockPage):
         #Initialize the mock objects
         mock_button = MagicMock()
@@ -132,7 +132,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertIsInstance(first_datetime, datetime)
         self.assertIsInstance(second_datetime, datetime)
 
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_to_sort(self, MockPage):
         #Initialize the mock objects
         mock_page = MockPage.return_value
@@ -176,7 +176,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_ul_element.query_selector_all.assert_called()
         mock_li_elements[1].click.assert_called_once()
 
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_get_total_ratings(self, MockPage):
         mock_page = MockPage.return_value
         mock_page.wait_for_load_state.return_value = None
@@ -189,7 +189,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page.query_selector.assert_called_once()
         rating_div.text_content.assert_called_once()
     
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_get_selling_price(self, MockPage):
         #Initialize the mock objects
         mock_page = MockPage.return_value
@@ -205,7 +205,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page.query_selector.assert_called_once()
         mock_price_element.text_content.assert_called_once()
 
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_get_ratings(self, MockPage):
         mock_page = MockPage.return_value
         mock_page.wait_for_selector.return_value = None
@@ -228,7 +228,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         for item in mock_items_div:
             item.query_selector.return_value.text_content.assert_called()
     
-    @patch('scrapping.Page')
+    @patch('src.scrapping.Page')
     def test_next_page(self, MockPage):
         mock_page = MockPage.return_value
         mock_page.wait_for_selector.return_value = None
