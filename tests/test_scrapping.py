@@ -17,7 +17,6 @@ from src.scrapping import (
 )
 import os
 from datetime import datetime
-import random
 
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
@@ -49,14 +48,14 @@ class TestPlaywrightFunctions(unittest.TestCase):
         text_map = get_text_map()
         self.assertIsInstance(text_map, dict)
 
-    def test_false_check_continue(self, start_date, end_date):
+    def test_false_check_continue(self):
         temp_list = ['2024-08-12', '2024-07-31']
-        continue_decision = check_continue(self.page, temp_list, start_date, end_date)
+        continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
         self.assertFalse(continue_decision)
 
-    def test_true_check_continue(self, start_date, end_date):
+    def test_true_check_continue(self):
         temp_list = ['2024-08-19', '2024-08-10']
-        continue_decision = check_continue(self.page, temp_list, start_date, end_date)
+        continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
         self.assertTrue(continue_decision)
 
     def test_parse_day_pattern(self):
@@ -90,7 +89,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertEqual(ago_match.group(1), "3", "Ago pattern did not match")
 
         #Write the test to test the delay attribute
-        delay_match = re.serach(delay_pattern, test_string['delay'])
+        delay_match = re.search(delay_pattern, test_string['delay'])
         self.assertIsNotNone(delay_match.group(1), "Delay pattern did not match")
         self.assertEqual(delay_match.group(1), "hours", "Delay pattern did not match")
 
