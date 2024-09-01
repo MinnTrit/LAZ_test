@@ -7,6 +7,7 @@ from src.scrapping import (
     get_text_map,
     get_month_map,
     search_product,
+    to_navigate,
     click_product,
     get_total_ratings,
     get_selling_price,
@@ -32,7 +33,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
         cls.page = cls.browser.new_page()
-        cls.page.goto('https://www.lazada.com.ph')
+        to_navigate(cls.page)
 
     @classmethod
     def tearDownClass(cls):
