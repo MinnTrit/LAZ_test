@@ -22,6 +22,8 @@ import random
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.start_date = '2024-08-01'
+        cls.end_date = '2024-08-31'
         input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
         product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
@@ -34,7 +36,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         click_product(cls.page, product_url)
 
     @classmethod
-    def tearDown(cls):
+    def tearDownClass(cls):
         cls.page.close()
         cls.browser.close()
         cls.playwright.stop()
@@ -47,14 +49,14 @@ class TestPlaywrightFunctions(unittest.TestCase):
         text_map = get_text_map()
         self.assertIsInstance(text_map, dict)
 
-    def test_false_check_continue(self):
+    def test_false_check_continue(self, start_date, end_date):
         temp_list = ['2024-08-12', '2024-07-31']
-        continue_decision = check_continue(self.page, temp_list)
+        continue_decision = check_continue(self.page, temp_list, start_date, end_date)
         self.assertFalse(continue_decision)
 
-    def test_true_check_continue(self):
+    def test_true_check_continue(self, start_date, end_date):
         temp_list = ['2024-08-19', '2024-08-10']
-        continue_decision = check_continue(self.page, temp_list)
+        continue_decision = check_continue(self.page, temp_list, start_date, end_date)
         self.assertTrue(continue_decision)
 
     def test_parse_day_pattern(self):
