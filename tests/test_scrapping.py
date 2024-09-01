@@ -17,28 +17,32 @@ from src.scrapping import (
 )
 import os
 from datetime import datetime
+import random
 
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
+    def setUpClass(cls):
+        cls.chromium_path = os.getenv("CHROMIUM_PATH")
+        cls.executable_path = os.path.join(cls.chromium_path, "chrome")
+        cls.playwright = sync_playwright().start()
+        cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
+
+    @classmethod
+    def tearDown(cls):
+        cls.page.close()
+        cls.browser.close()
+        cls.playwright.stop()
+
     def setUp(self):
         self.start_date = '2024-08-01'
         self.end_date = '2024-08-30'
         input_product = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
         product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
-        self.chromium_path = os.getenv("CHROMIUM_PATH")
-        self.executable_path = os.path.join(self.chromium_path, "chrome")
-        self.playwright = sync_playwright().start()
-        self.browser = self.playwright.chromium.launch(executable_path=self.executable_path, headless=True)
         self.page = self.browser.new_page()
         to_navigate(self.page)
         search_product(self.page, input_product)
         click_product(self.page, product_url)
 
-    @classmethod
-    def tearDown(self):
-        self.page.close()
-        self.browser.close()
-        self.playwright.stop()
 
     def test_get_month_map(self):
         month_map = get_month_map()
@@ -81,7 +85,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         #Write the test to match the year
         year_match = re.search(year_pattern, test_string['year'])
         self.assertIsNotNone(year_match.group(1), "Year pattern did not match")
-        self.assertEqual(year_pattern.group(1), "2025", "Year pattern did not match")
+        self.assertEqual(year_match.group(1), "2025", "Year pattern did not match")
 
         #Write the test to test the ago time
         ago_match = re.search(ago_pattern, test_string['ago'])
@@ -103,8 +107,8 @@ class TestPlaywrightFunctions(unittest.TestCase):
 
     def test_to_sort(self):
         sort_option='recent'
-        self.sort_decision = to_sort(self.page, sort_option)
-        self.assertIsInstance(self.sort_decision, str)
+        sort_decision = to_sort(self.page, sort_option)
+        self.assertIsInstance(sort_decision, str)
 
     def test_get_total_ratings(self):
         rating_value = get_total_ratings(self.page)
@@ -115,10 +119,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertIsInstance(selling_price, int)
 
     def test_get_ratings(self):
-        if self.sort_decision == "Found":
-            ratings = get_ratings(self.page)
-        else:
-            ratings = 0
+        ratings = get_ratings(self.page)
         self.assertIsInstance(ratings, int)
 
     def test_full_work_flow(self):
