@@ -28,7 +28,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
         cls.executable_path = os.path.join(cls.chromium_path, "chrome")
         cls.playwright = sync_playwright().start()
-        cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
+        cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=False)
         cls.page = cls.browser.new_page()
         to_navigate(cls.page)
         search_product(cls.page, input_product)
@@ -49,12 +49,12 @@ class TestPlaywrightFunctions(unittest.TestCase):
         self.assertIsInstance(text_map, dict)
 
     def test_false_check_continue(self):
-        temp_list = ['2024-08-12', '2024-07-31']
+        temp_list = [datetime(2024, 7, 10), datetime(2024, 8, 17)]
         continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
         self.assertFalse(continue_decision)
 
     def test_true_check_continue(self):
-        temp_list = ['2024-08-19', '2024-08-10']
+        temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
         continue_decision = check_continue(self.page, temp_list, self.start_date, self.end_date)
         self.assertTrue(continue_decision)
 
