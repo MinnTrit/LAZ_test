@@ -39,6 +39,16 @@ def to_navigate(page):
             print('Error occurred while navigating the page, captcha found')
             current_retry += 1
 
+def get_matching_pattern(pattern_type):
+    if pattern_type == 'selling_price':
+        matching_pattern = r'(\d+[^a-zA-Z0-9]\d+|\d+)'
+    elif pattern_type == 'total_ratings':
+        matching_pattern = r'(\d+\.?\d*)'
+    elif pattern_type == 'urls':
+        matching_pattern = r'//(.*)'
+    return matching_pattern        
+
+
 def get_text_map():
     text_map = {
         'weeks': 7,
@@ -92,7 +102,7 @@ def click_product(page, product_url):
     while current_retry < retries:
         try:
             page.wait_for_selector('button.ant-pagination-item-link')
-            trim_pattern = r'//(.*)'
+            trim_pattern = get_matching_pattern('urls')
             page.wait_for_selector('div._17mcb')
             all_products = page.query_selector('div._17mcb').query_selector_all('div.Bm3ON div._95X4G')
             for product in all_products:
@@ -120,7 +130,7 @@ def get_total_ratings(page):
     current_retry = 0
     while current_retry < retries:
         try:
-            matching_pattern = r'(\d+\.?\d*)'
+            matching_pattern = get_matching_pattern('total_ratings')
             page.wait_for_load_state('load')
             rating_div = page.query_selector('div.pdp-review-summary a')
             if rating_div:
@@ -142,7 +152,7 @@ def get_selling_price(page):
     current_retry = 0
     while current_retry < retries:
         try:
-            matching_pattern = r'(\d+[^a-zA-Z0-9]\d+|\d+)'
+            matching_pattern = get_matching_pattern('selling_price')
             page.wait_for_selector('div.pdp-product-price')
             price_element = page.query_selector('div.pdp-product-price span')
             if price_element:
@@ -288,40 +298,41 @@ def get_ratings(page):
             return 0
     return rating_count
 
+def main(page):
+    to_navigate(page)
+    print(f'Connected to page {page}')
+    search_product(page, product_name)
+    final_map = click_product(page, product_url)
+    if final_map:
+        print('Fail getting the products')
+        df = pd.DataFrame(final_map, index='rating')
+        df.to_clipboard(index=False, header=False)
+    else:
+        print("Start getting the SKUs'information")
+        sort_decision = to_sort(page, sort_option)
+        rating_value = get_total_ratings(page)
+        selling_price = get_selling_price(page)
+        if sort_decision == "Found":
+            ratings = get_ratings(page)
+        else:
+            ratings = 0
+        print(f'Total ratings: {rating_value}')
+        print(f'Selling price: {selling_price}')
+        print(f'Rating this month: {ratings}')
+        final_map = {
+            'current_month': ratings,
+            'rating_value': rating_value,
+            'selling_price':selling_price
+            }
+    return final_map
+
 if __name__ == '__main__':
     with sync_playwright() as pw: 
-        print('Start connecting to the browser')
-        browser = pw.chromium.launch(executable_path=executable_path, headless=headless_option)
-        context = browser.new_context(viewport={
-            'height': 650,
-            'width': 1300
-        })
-        page = context.new_page()
-        to_navigate(page)
-        print(f'Connected to page {page}')
-        search_product(page, product_name)
-        final_map = click_product(page, product_url)
-        if final_map:
-            print('Fail getting the products')
-            df = pd.DataFrame(final_map, index='rating')
-            df.to_clipboard(index=False, header=False)
-        else:
-            print("Start getting the SKUs'information")
-            sort_decision = to_sort(page, sort_option)
-            rating_value = get_total_ratings(page)
-            selling_price = get_selling_price(page)
-            if sort_decision == "Found":
-                ratings = get_ratings(page)
-            else:
-                ratings = 0
-            print(f'Total ratings: {rating_value}')
-            print(f'Selling price: {selling_price}')
-            print(f'Rating this month: {ratings}')
-            final_map = {
-                'current_month': ratings,
-                'rating_value': rating_value,
-                'selling_price':selling_price
-                }
-            #Push to the clipboard
-            df = pd.DataFrame(final_map, index='rating')
-            df.to_clipboard(index=False, header=False)
+            print('Start connecting to the browser')
+            browser = pw.chromium.launch(executable_path=executable_path, headless=headless_option)
+            context = browser.new_context(viewport={
+                'height': 650,
+                'width': 1300
+            })
+            page = context.new_page()
+    main(page)

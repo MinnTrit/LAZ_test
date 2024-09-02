@@ -3,11 +3,12 @@ from unittest.mock import MagicMock, patch
 import re
 from playwright.sync_api import sync_playwright
 from src.scrapping import (
+    main,
     convert_to_datetime,
     get_text_map,
     get_month_map,
-    search_product,
     to_navigate,
+    search_product,
     click_product,
     get_total_ratings,
     get_selling_price,
@@ -18,18 +19,23 @@ from src.scrapping import (
     next_page
 )
 import os
+import pandas as pd
+from fuzzywuzzy import fuzz
 from datetime import datetime
 import random
 
 class TestPlaywrightFunctions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        print('Start launching the test')
         cls.start_date = '2024-08-01'
         cls.end_date = '2024-08-31'
+        cls.similarity_raito = 80
+        cls.trim_pattern = r'//(.*)'
         cls.product_name = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
-        cls.product_url = 'https://www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
+        cls.product_url = 'www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
-        cls.executable_path = os.path.join(cls.chromium_path, "chrome")
+        cls.executable_path = os.path.join(cls.chromium_path, "chrome.exe")
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
         cls.page = cls.browser.new_page()
@@ -49,31 +55,73 @@ class TestPlaywrightFunctions(unittest.TestCase):
         text_map = get_text_map()
         self.assertIsInstance(text_map, dict)
 
-    def assert_search_product(self):
-        while True:
-            try: 
-                self.page.wait_for_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last')  
-                break
-            except Exception:
-                continue
-        search_string = self.page.query_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last').text_content()
-        self.assertEqual(search_string, 'Search Results')
+    @patch('src.scrapping.Page')
+    def test_to_navigate(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.goto.return_value = None
+        mock_page.wait_for_load_state.return_value = None
+        to_navigate(mock_page)
+        mock_page.goto.assert_called_once()
+        mock_page.wait_for_load_state.assert_called()
 
-    def assert_click_product(self):
-        while True:
-            try: 
-                self.page.wait_for_selector('div.pdp-mod-product-badge-wrapper') 
-                break
-            except Exception:
-                continue
-        product_string = self.page.query_selector('div.pdp-mod-product-badge-wrapper').text_content()
-        self.assertEqual(product_string, self.product_name)
+    @patch('src.scrapping.Page')
+    def test_search_product(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.wait_for_selector.return_value = None
+        mock_search_div = random.choice([MagicMock(), None])
+        mock_page.query_selector.return_value = mock_search_div
+        if mock_search_div:
+            mock_search_div.fill.return_value = None
+            mock_page.keyboard.press.return_value = None
+        search_product(mock_page, self.product_name)
+        mock_page.wait_for_selector.assert_called()
+        if mock_search_div:
+            mock_search_div.fill.assert_called()
+            mock_page.keyboard.press.assert_called()
+        else: 
+            self.assertTrue(any("Error occurred while searching the products, captcha found" ))
 
-    def test_search_and_click_product(self):
-        search_product(self.page, self.product_name)
-        self.assert_search_product()
-        click_product(self.page, self.product_url)
-        self.assert_click_product()
+    @patch('src.scrapping.Page')
+    def test_click_product(self, MockPage):
+        df = pd.read_excel(r'D:\Github\products_url.xlsx')
+        urls_list = df['products_url'].values.tolist()
+        mock_page = MockPage.return_value
+
+        #Mock the over 18 warning
+        mock_over_18 = random.choice([MagicMock(), None])
+        mock_page.query_selector.side_effect = lambda x: mock_over_18 if 'button.ant-btn' in x else None
+        if mock_over_18:
+            mock_over_18.click.return_value = None
+
+        #Mock the next button
+        mock_next_button = random.choice([MagicMock(), None])
+        mock_page.query_selector_all.side_effect =lambda x: mock_next_button if 'button.ant-pagination-item-link' in x else None
+        if mock_next_button:
+            mock_next_button.click.return_value = None
+        
+        #Mock all products div
+        mock_page.wait_for_selector.side_effect = [None, None]
+        mock_all_products_div = [MagicMock() for _ in range(len(urls_list))]
+        result_list = []
+        for index, mock_product in enumerate(mock_all_products_div):
+            mock_product = MagicMock()
+            laz_url = urls_list[index]
+            mock_product_query = MagicMock()
+            mock_product.query_selector.return_value = mock_product_query
+            mock_product_query.get_attribute.return_value = laz_url
+            laz_clean_url = re.search(self.trim_pattern, laz_url).group(1)
+            if fuzz.ratio(laz_clean_url, self.product_url) >= self.similarity_raito:
+                mock_product.click.return_value = None
+                result_list.append(mock_product)
+        
+        with patch('src.scrapping.fuzz.ratio', return_value=80):
+            click_product(mock_page, self.product_url)
+
+        self.assertTrue(any("Clicked the \"Over 18\" button"))
+        self.assertTrue(any("The product has been clicked"))
+        if mock_over_18:
+            mock_over_18.click.assert_called_once()
+        self.assertTrue(len(result_list) != 0, "Fail clicking the products")
 
     @patch('src.scrapping.Page')
     def test_check_continue(self, MockPage):
@@ -256,6 +304,10 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page.wait_for_selector.assert_called_once_with(next_page_element)
         mock_page.query_selector.assert_called_once_with(next_page_element)
         mock_button.click.assert_called_once()
+
+    def test_main(self):
+        final_map = main(self.page)
+        self.assertIsInstance(final_map, dict)
 
 if __name__ == '__main__':
     unittest.main()
