@@ -327,13 +327,3 @@ def main(page):
             }
     return final_map
 
-# if __name__ == '__main__':
-#     with sync_playwright() as pw: 
-#             print('Start connecting to the browser')
-#             browser = pw.chromium.launch(executable_path=executable_path, headless=headless_option)
-#             context = browser.new_context(viewport={
-#                 'height': 650,
-#                 'width': 1300
-#             })
-#             page = context.new_page()
-#     main(page)
