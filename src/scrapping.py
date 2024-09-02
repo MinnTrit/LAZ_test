@@ -305,8 +305,7 @@ def main(page):
     final_map = click_product(page, product_url)
     if final_map:
         print('Fail getting the products')
-        df = pd.DataFrame(final_map, index='rating')
-        df.to_clipboard(index=False, header=False)
+        return final_map
     else:
         print("Start getting the SKUs'information")
         sort_decision = to_sort(page, sort_option)
