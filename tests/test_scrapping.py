@@ -33,7 +33,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         cls.similarity_raito = 80
         cls.trim_pattern = r'//(.*)'
         cls.product_name = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
-        cls.product_url = 'www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
+        cls.product_url = 'www.lazada.com.ph/products/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i121514484.html'
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
         cls.executable_path = os.path.join(cls.chromium_path, "chrome")
         cls.playwright = sync_playwright().start()
@@ -83,45 +83,49 @@ class TestPlaywrightFunctions(unittest.TestCase):
 
     @patch('src.scrapping.Page')
     def test_click_product(self, MockPage):
-        df = pd.read_excel(r'/home/runner/work/LAZ_test/LAZ_test/products_url.xlsx')
-        urls_list = df['products_url'].values.tolist()
         mock_page = MockPage.return_value
+        mock_over18_button = MagicMock()
+        mock_product_container = MagicMock()
+        mock_page.wait_for_seletor.return_value = None
+        mock_page.query_selector.side_effect = [
+            mock_over18_button,
+            mock_product_container
+        ]
+        if mock_over18_button:
+            mock_over18_button.click.return_value = None
 
-        #Mock the over 18 warning
-        mock_over_18 = random.choice([MagicMock(), None])
-        mock_page.query_selector.side_effect = lambda x: mock_over_18 if 'button.ant-btn' in x else None
-        if mock_over_18:
-            mock_over_18.click.return_value = None
+        #Mock all the products
+        mock_all_products = [MagicMock() for _ in range(40)]
+        mock_product_container.query_selector_all.return_value = mock_all_products
+        test_product = mock_all_products[0]
+        mock_a_element = MagicMock()
+        test_url = 'https://www.lazada.com.ph/products/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i121514484.html'
+        test_product.query_selector.return_value = mock_a_element
+        mock_a_element.get_attribute.return_value = test_url
+        test_product.click.return_value = None
 
         #Mock the next button
-        mock_next_button = random.choice([MagicMock(), None])
-        mock_page.query_selector_all.side_effect =lambda x: mock_next_button if 'button.ant-pagination-item-link' in x else None
-        if mock_next_button:
-            mock_next_button.click.return_value = None
-        
-        #Mock all products div
-        mock_page.wait_for_selector.side_effect = [None, None]
-        mock_all_products_div = [MagicMock() for _ in range(len(urls_list))]
-        result_list = []
-        for index, mock_product in enumerate(mock_all_products_div):
-            mock_product = MagicMock()
-            laz_url = urls_list[index]
-            mock_product_query = MagicMock()
-            mock_product.query_selector.return_value = mock_product_query
-            mock_product_query.get_attribute.return_value = laz_url
-            laz_clean_url = re.search(self.trim_pattern, laz_url).group(1)
-            if fuzz.ratio(laz_clean_url, self.product_url) >= self.similarity_raito:
-                mock_product.click.return_value = None
-                result_list.append(mock_product)
-        
-        with patch('src.scrapping.fuzz.ratio', return_value=80):
-            click_product(mock_page, self.product_url)
+        # Create a mock for the query_selector_all method
+        mock_query_selector_all = MagicMock()
+        mock_page.query_selector_all = mock_query_selector_all
 
-        self.assertTrue(any("Clicked the \"Over 18\" button"))
-        self.assertTrue(any("The product has been clicked"))
-        if mock_over_18:
-            mock_over_18.click.assert_called_once()
-        self.assertTrue(len(result_list) != 0, "Fail clicking the products")
+        # Create mock next button
+        mock_button_0 = MagicMock()
+        mock_button_1 = MagicMock()
+        mock_query_selector_all.return_value = [mock_button_0, mock_button_1]
+
+        # The actual code to be tested
+        mock_all_buttons = mock_page.query_selector_all('button.ant-pagination-item-link')
+        mock_next_button = mock_all_buttons[1]
+        mock_next_button.click.return_value = None
+        if len(mock_all_buttons) > 1:
+            mock_next_button = mock_all_buttons[1]
+            mock_next_button.click()
+
+        click_product(mock_page, self.product_url)
+        mock_over18_button.click.assert_called_once()
+        test_product.click.assert_called_once()
+        mock_next_button.click.assert_called_once()
 
     @patch('src.scrapping.Page')
     def test_check_continue(self, MockPage):
@@ -132,6 +136,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         continue_decision = check_continue(mock_page, temp_list, self.start_date)
         self.assertFalse(continue_decision)
         mock_page.query_selector.assert_called_once()
+        self.assertTrue(any("Clicked the \"Over 18\" button"))
 
     @patch('src.scrapping.Page')
     def test_true_check_continue(self, MockPage):
@@ -269,7 +274,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_price_element.text_content.assert_called_once()
 
     @patch('src.scrapping.Page')
-    def test_get_ratings(self, MockPage):
+    def test_get_ratings_first_condition(self, MockPage):
         mock_page = MockPage.return_value
         mock_page.wait_for_selector.return_value = None
         #Create the rating div
@@ -287,7 +292,31 @@ class TestPlaywrightFunctions(unittest.TestCase):
         ratings = get_ratings(mock_page)
         self.assertIsInstance(ratings, int)
         mock_page.query_selector.assert_called()
-        mock_rating_div.query_selector_all.assert_called_once_with('div.item')
+        mock_rating_div.query_selector_all.assert_called_with('div.item')
+        for item in mock_items_div:
+            item.query_selector.return_value.text_content.assert_called()
+
+    @patch('src.scrapping.Page')
+    def test_get_ratings_second_condition(self, MockPage):
+        words_list = ['hours', 'hour', 'week', 'weeks', 'day', 'days', 'minutes', 'minute']
+        mock_page = MockPage.return_value
+        mock_page.wait_for_selector.return_value = None
+        #Create the rating div
+        mock_rating_div = MagicMock()
+        mock_page.query_selector.return_value = mock_rating_div
+        mock_items_div = [MagicMock() for _ in range(10)]
+        mock_rating_div.query_selector_all.return_value = mock_items_div
+        for item in mock_items_div:
+            random_value = random.randint(1, 28)
+            random_index = random.randint(0, len(words_list)-1)
+            chosen_word = words_list[random_index]
+            date_string = f'{random_value} {chosen_word} ago'
+            item.query_selector.return_value.text_content.return_value = date_string
+
+        ratings = get_ratings(mock_page)
+        self.assertIsInstance(ratings, int)
+        mock_page.query_selector.assert_called()
+        mock_rating_div.query_selector_all.assert_called_with('div.item')
         for item in mock_items_div:
             item.query_selector.return_value.text_content.assert_called()
     

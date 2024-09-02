@@ -104,7 +104,8 @@ def click_product(page, product_url):
             page.wait_for_selector('button.ant-pagination-item-link')
             trim_pattern = get_matching_pattern('urls')
             page.wait_for_selector('div._17mcb')
-            all_products = page.query_selector('div._17mcb').query_selector_all('div.Bm3ON div._95X4G')
+            div_product = page.query_selector('div._17mcb')
+            all_products = div_product.query_selector_all('div.Bm3ON div._95X4G')
             for product in all_products:
                 laz_product_url = product.query_selector('a').get_attribute('href')
                 laz_clean_url = re.search(trim_pattern, laz_product_url).group(1)
@@ -113,11 +114,12 @@ def click_product(page, product_url):
                     page.wait_for_load_state('load')
                     print('The product has been clicked')
                     return
-            next_button = page.query_selector_all('button.ant-pagination-item-link')[1]
-            if next_button:
+            all_buttons = page.query_selector_all('button.ant-pagination-item-link')
+            if len(all_buttons) > 1:
+                next_button = all_buttons[1]
                 next_button.click()
-        except Exception:
-            print('Error occured while click the product, capcha found')
+        except Exception as e:
+            print(f'Error occured while click the product, capcha found {e}')
             current_retry += 1
     return {
         'current_month': 0,
@@ -276,7 +278,7 @@ def get_ratings(page):
                         if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
                             rating_count += 1
                     else:
-                        current_date = datetime.now() - timedelta(days=1)
+                        current_date = datetime.now()
                         ago_value = int(re.search(ago_pattern, date_string).group(1))
                         delay_value = int(text_map.get(re.search(delay_pattern, date_string).group(1)))
                         delay_days = ago_value * delay_value
