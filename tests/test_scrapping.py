@@ -64,7 +64,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page.goto.assert_called_once()
         mock_page.wait_for_load_state.assert_called()
 
-    @patch('src.crapping.Page')
+    @patch('src.scrapping.Page')
     def test_navigate_with_exception(self, MockPage):
         mock_page = MockPage.return_value
         mock_page.wait_for_load_state.side_effect = [Exception("Error"), None] 
