@@ -35,7 +35,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         cls.product_name = 'Portable Electric Stove Single Burner 1000W Hot Plate JX1010B'
         cls.product_url = 'www.lazada.com.ph/portable-electric-stove-single-burner-1000w-hot-plate-jx1010b-i139390960-s157858946.html'
         cls.chromium_path = os.getenv("CHROMIUM_PATH")
-        cls.executable_path = os.path.join(cls.chromium_path, "chrome.exe")
+        cls.executable_path = os.path.join(cls.chromium_path, "chrome")
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(executable_path=cls.executable_path, headless=True)
         cls.page = cls.browser.new_page()
@@ -83,7 +83,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
 
     @patch('src.scrapping.Page')
     def test_click_product(self, MockPage):
-        df = pd.read_excel(r'D:\Github\products_url.xlsx')
+        df = pd.read_excel(r'/products_url.xlsx')
         urls_list = df['products_url'].values.tolist()
         mock_page = MockPage.return_value
 
