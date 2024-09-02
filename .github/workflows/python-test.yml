@@ -31,6 +31,7 @@ jobs:
                 pip install pytest
                 pip install pytest-cov
                 playwright install
+                pip install openpyxl
 
             - name: Set up environment variables
               run: echo "CHROMIUM_PATH=/home/runner/.cache/ms-playwright/chromium-1129/chrome-linux" >> $GITHUB_ENV
