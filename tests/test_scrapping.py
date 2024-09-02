@@ -19,6 +19,7 @@ from src.scrapping import (
     next_page
 )
 import os
+import io
 import pandas as pd
 from fuzzywuzzy import fuzz
 from datetime import datetime
@@ -69,10 +70,12 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page = MockPage.return_value
         mock_page.wait_for_load_state.side_effect = [Exception("Error"), None] 
         
-        with self.assertLogs(level='INFO'):
+        with patch('sys.stdout', new=io.StringIO()) as fake_stdout:
             to_navigate(mock_page)
+            output = fake_stdout.getvalue()
         mock_page.wait_for_load_state.assert_called() 
-        self.assertEqual(mock_page.wait_for_load_state.call_count, 2)  
+        self.assertEqual(mock_page.wait_for_load_state.call_count, 2) 
+        self.assertIn('Error occurred while navigating the page, captcha found', output)
 
     @patch('src.scrapping.Page')
     def test_search_product(self, MockPage):
