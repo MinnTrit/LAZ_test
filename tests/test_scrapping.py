@@ -129,7 +129,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page = MockPage.return_value
         mock_page.query_selector.get_attribute.return_value = 'Enable'
         temp_list = [datetime(2024, 7, 10), datetime(2024, 8, 17)]
-        continue_decision = check_continue(mock_page, temp_list, self.start_date, self.end_date)
+        continue_decision = check_continue(mock_page, temp_list, self.start_date)
         self.assertFalse(continue_decision)
         mock_page.query_selector.assert_called_once()
 
@@ -140,7 +140,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_button = MagicMock()
         mock_button.get_attribute.return_value = 'Enable'
         temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
-        continue_decision = check_continue(mock_page, temp_list, self.start_date, self.end_date)
+        continue_decision = check_continue(mock_page, temp_list, self.start_date)
         self.assertTrue(continue_decision)
         mock_page.query_selector.assert_called_once()
 
@@ -152,7 +152,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page.query_selector.return_value = mock_button
         mock_button.get_attribute.return_value = ''
         temp_list = [datetime(2024, 8, 22), datetime(2024, 8, 19)]
-        continue_decision = check_continue(mock_page, temp_list, self.start_date, self.end_date)
+        continue_decision = check_continue(mock_page, temp_list, self.start_date)
         self.assertFalse(continue_decision)
         mock_page.query_selector.assert_called_once()
         mock_button.get_attribute.assert_called_once_with('disabled')
