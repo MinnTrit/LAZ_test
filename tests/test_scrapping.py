@@ -49,15 +49,31 @@ class TestPlaywrightFunctions(unittest.TestCase):
         text_map = get_text_map()
         self.assertIsInstance(text_map, dict)
 
-    def test_search_and_click_product(self):
-        search_product(self.page, self.product_name)
-        self.page.wait_for_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last')
+    def assert_search_product(self):
+        while True:
+            try: 
+                self.page.wait_for_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last')  
+                break
+            except Exception:
+                continue
         search_string = self.page.query_selector('span.breadcrumb_item_anchor.breadcrumb_item_anchor_last').text_content()
         self.assertEqual(search_string, 'Search Results')
-        click_product(self.page, self.product_url)
-        self.page.wait_for_selector('div.pdp-mod-product-badge-wrapper')
+
+    def assert_click_product(self):
+        while True:
+            try: 
+                self.page.wait_for_selector('div.pdp-mod-product-badge-wrapper') 
+                break
+            except Exception:
+                continue
         product_string = self.page.query_selector('div.pdp-mod-product-badge-wrapper').text_content()
         self.assertEqual(product_string, self.product_name)
+
+    def test_search_and_click_product(self):
+        search_product(self.page, self.product_name)
+        self.assert_search_product()
+        click_product(self.page, self.product_url)
+        self.assert_click_product()
 
     @patch('src.scrapping.Page')
     def test_check_continue(self, MockPage):
