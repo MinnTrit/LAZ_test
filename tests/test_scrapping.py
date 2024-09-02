@@ -287,6 +287,14 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_price_element.text_content.assert_called_once()
 
     @patch('src.scrapping.Page')
+    def test_get_selling_price_exception(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.wait_for_selector = MagicMock(side_effect=Exception("Test Exception"))
+        mock_page.query_selector = MagicMock()
+        result = get_selling_price(mock_page)
+        self.assertEqual(result, 0)
+
+    @patch('src.scrapping.Page')
     def test_get_ratings_first_condition(self, MockPage):
         mock_page = MockPage.return_value
         mock_page.wait_for_selector.return_value = None
