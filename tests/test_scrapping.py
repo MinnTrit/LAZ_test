@@ -64,6 +64,16 @@ class TestPlaywrightFunctions(unittest.TestCase):
         mock_page.goto.assert_called_once()
         mock_page.wait_for_load_state.assert_called()
 
+    @patch('src.crapping.Page')
+    def test_navigate_with_exception(self, MockPage):
+        mock_page = MockPage.return_value
+        mock_page.wait_for_load_state.side_effect = [Exception("Error"), None] 
+        
+        with self.assertLogs(level='INFO'):
+            to_navigate(mock_page)
+        mock_page.wait_for_load_state.assert_called() 
+        self.assertEqual(mock_page.wait_for_load_state.call_count, 2)  
+
     @patch('src.scrapping.Page')
     def test_search_product(self, MockPage):
         mock_page = MockPage.return_value
