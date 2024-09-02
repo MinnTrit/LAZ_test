@@ -213,7 +213,7 @@ def next_page(page):
     if next_button:
         next_button.click()
 
-def check_continue(page, temp_list, start_date, end_date):
+def check_continue(page, temp_list, start_date):
     start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     previous_month = start_date_obj - timedelta(days=1)
     previous_start_date = previous_month.replace(day=1)
@@ -284,7 +284,7 @@ def get_ratings(page):
                         temp_list.append(datetime_obj)
                         if datetime_obj.date() >= start_date_obj.date() and datetime_obj.date() <= end_date_obj.date():
                             rating_count += 1
-                to_continue = check_continue(page, temp_list, start_date, end_date)
+                to_continue = check_continue(page, temp_list, start_date)
         except Exception:
             print('Captcha found, fail getting the current ratings')
             return 0

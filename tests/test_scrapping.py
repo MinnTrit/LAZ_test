@@ -83,7 +83,7 @@ class TestPlaywrightFunctions(unittest.TestCase):
 
     @patch('src.scrapping.Page')
     def test_click_product(self, MockPage):
-        df = pd.read_excel(r'/products_url.xlsx')
+        df = pd.read_excel(r'/home/runner/work/LAZ_test/LAZ_test/products_url.xlsx')
         urls_list = df['products_url'].values.tolist()
         mock_page = MockPage.return_value
 
